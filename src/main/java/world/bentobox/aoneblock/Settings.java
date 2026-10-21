@@ -259,6 +259,11 @@ public class Settings implements WorldSettings {
     @ConfigEntry(path = "world.use-own-generator")
     private boolean useOwnGenerator;
 
+    @ConfigComment("Use the island-center chunk as the progress area instead of one magic block.")
+    @ConfigComment("Disabled by default so existing AOneBlock worlds keep their current behavior.")
+    @ConfigEntry(path = "world.onechunk.enabled")
+    private boolean oneChunkEnabled;
+
     @ConfigComment("Sea height (don't changes this mid-game unless you delete the world)")
     @ConfigComment("Minimum is 0")
     @ConfigComment("If sea height is less than about 10, then players will drop right through it")
@@ -748,6 +753,13 @@ public class Settings implements WorldSettings {
     @Override
     public boolean isUseOwnGenerator() {
         return useOwnGenerator;
+    }
+
+    /**
+     * @return whether progression applies to the full 16x16 center chunk
+     */
+    public boolean isOneChunkEnabled() {
+        return oneChunkEnabled;
     }
 
     /**

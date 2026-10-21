@@ -243,8 +243,11 @@ public class BlockListener extends FlagListener implements Listener {
             return;
         }
         Location l = e.getToBlock().getLocation();
-        // Cannot flow to center block
-        e.setCancelled(addon.getIslands().getIslandAt(l).filter(i -> l.equals(i.getCenter())).isPresent());
+        // The classic magic block must remain dry. OneChunk intentionally allows
+        // normal fluid behavior throughout its playable chunk.
+        if (!isOneChunkEnabled()) {
+            e.setCancelled(addon.getIslands().getIslandAt(l).filter(i -> l.equals(i.getCenter())).isPresent());
+        }
     }
 
     /**
@@ -274,8 +277,8 @@ public class BlockListener extends FlagListener implements Listener {
         Location l = e.getBlock().getLocation();
         // checkIsland cancels the event and sends the protection message if the player
         // is not allowed to break the magic block.
-        addon.getIslands().getIslandAt(l).filter(i -> l.equals(i.getCenter()))
-                .ifPresent(i -> checkIsland(e, e.getPlayer(), i.getCenter(), addon.MAGIC_BLOCK));
+        addon.getIslands().getIslandAt(l).filter(i -> isProgressBlock(i, l))
+                .ifPresent(i -> checkIsland(e, e.getPlayer(), l, addon.MAGIC_BLOCK));
     }
 
     /**
@@ -288,8 +291,8 @@ public class BlockListener extends FlagListener implements Listener {
             return;
         }
         Location l = e.getBlock().getLocation();
-        addon.getIslands().getIslandAt(l).filter(i -> l.equals(i.getCenter()))
-        .ifPresent(i -> process(e, i, e.getPlayer(), e.getPlayer().getWorld()));
+        addon.getIslands().getIslandAt(l).filter(i -> isProgressBlock(i, l))
+        .ifPresent(i -> process(e, i, e.getPlayer(), e.getPlayer().getWorld(), e.getBlock()));
     }
 
     /**
@@ -304,8 +307,8 @@ public class BlockListener extends FlagListener implements Listener {
             return;
         }
         Location l = e.getBlock().getLocation();
-        addon.getIslands().getIslandAt(l).filter(i -> l.equals(i.getCenter()))
-        .ifPresent(i -> process(e, i, null, e.getBlock().getWorld()));
+        addon.getIslands().getIslandAt(l).filter(i -> isProgressBlock(i, l))
+        .ifPresent(i -> process(e, i, null, e.getBlock().getWorld(), e.getBlock()));
     }
 
     /**
@@ -317,8 +320,8 @@ public class BlockListener extends FlagListener implements Listener {
     public void onBlockBreak(final PlayerBucketFillEvent e) {
         if (addon.inWorld(e.getBlock().getWorld())) {
             Location l = e.getBlock().getLocation();
-            addon.getIslands().getIslandAt(l).filter(i -> l.equals(i.getCenter()))
-            .ifPresent(i -> process(e, i, e.getPlayer(), e.getPlayer().getWorld()));
+            addon.getIslands().getIslandAt(l).filter(i -> isProgressBlock(i, l))
+            .ifPresent(i -> process(e, i, e.getPlayer(), e.getPlayer().getWorld(), e.getBlock()));
         }
     }
 
@@ -400,6 +403,27 @@ public class BlockListener extends FlagListener implements Listener {
     }
 
     /**
+     * Matches either the legacy magic block or, when explicitly enabled, every
+     * block in the 16x16 chunk containing the island center. The config gate
+     * keeps existing AOneBlock installations behaviorally unchanged.
+     */
+    public boolean isProgressBlock(@NonNull Island island, @NonNull Location location) {
+        Location center = Objects.requireNonNull(island.getCenter());
+        if (!isOneChunkEnabled()) {
+            return location.equals(center);
+        }
+        return location.getWorld() == center.getWorld()
+                && (location.getBlockX() >> 4) == (center.getBlockX() >> 4)
+                && (location.getBlockZ() >> 4) == (center.getBlockZ() >> 4)
+                && location.getBlockY() >= center.getWorld().getMinHeight()
+                && location.getBlockY() < center.getWorld().getMaxHeight();
+    }
+
+    private boolean isOneChunkEnabled() {
+        return addon.getSettings() != null && addon.getSettings().isOneChunkEnabled();
+    }
+
+    /**
      * Main magic block processing method that handles the magic block mechanics.
      * This includes phase changes, block spawning, and event handling.
      *
@@ -408,17 +432,17 @@ public class BlockListener extends FlagListener implements Listener {
      * @param player - player who broke the block or who is involved - may be null
      * @param world - world where the block is being broken
      */
-    private void process(@NonNull Cancellable e, @NonNull Island island, @Nullable Player player, @NonNull World world) {
+    private void process(@NonNull Cancellable e, @NonNull Island island, @Nullable Player player, @NonNull World world,
+            @NonNull Block block) {
         // Check if the player has authority to break the magic block. When there is no
         // player (e.g. the block is broken by a JetsMinions minion) the protection flag
         // check is skipped: it requires a User and would otherwise throw an NPE inside
         // BentoBox's FlagListener. See https://github.com/BentoBoxWorld/AOneBlock/issues/525
-        if (player != null && !checkIsland((@NonNull Event) e, player, island.getCenter(), addon.MAGIC_BLOCK)) {
+        if (player != null && !checkIsland((@NonNull Event) e, player, block.getLocation(), addon.MAGIC_BLOCK)) {
             // Not allowed
             return;
         }
 
-        Block block = Objects.requireNonNull(island.getCenter()).toVector().toLocation(world).getBlock();
         OneBlockIslands is = getIsland(island);
 
         // Process phase changes and requirements
@@ -862,7 +886,7 @@ public class BlockListener extends FlagListener implements Listener {
         if (block.getType() != Material.SUSPICIOUS_GRAVEL && block.getType() != Material.SUSPICIOUS_SAND) return;
         if (e.getPlayer().getInventory().getItemInMainHand().getType() != Material.BRUSH) return;
         if (addon.getIslands().getIslandAt(block.getLocation())
-                .filter(i -> i.getCenter().equals(block.getLocation())).isEmpty()) return;
+                .filter(i -> isProgressBlock(i, block.getLocation())).isEmpty()) return;
 
         if (block.getBlockData() instanceof Brushable bb) {
             int dusted = bb.getDusted() + 1;

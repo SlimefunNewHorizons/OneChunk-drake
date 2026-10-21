@@ -53,6 +53,10 @@ world:
   # Name of the world - if it does not exist then it will be generated.
   # It acts like a prefix for nether and end (e.g. oneblock_world, oneblock_world_nether, oneblock_world_end)
   world-name: oneblock_world
+  onechunk:
+    # Progression applies to every block in the 16x16 chunk containing the island center.
+    # Disabled by default to preserve existing AOneBlock worlds until a OneChunk world is staged.
+    enabled: false
   # World difficulty setting - PEACEFUL, EASY, NORMAL, HARD
   # Other plugins may override this setting
   difficulty: NORMAL

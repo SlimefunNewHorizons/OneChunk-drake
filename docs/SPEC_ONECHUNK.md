@@ -39,20 +39,44 @@ Investigación completa en el ticket #401 de SAORI (`ai-hub`, `saori_orchestrado
 - Compilar siempre con `~/ai-hub/scripts/build_seguro.sh`.
 - Un cambio por pasada, con prueba, documentado en `docs/proactivo/BITACORA.md`.
 
-## Decisión de diseño pendiente (Jack, preguntada 2026-10-21): qué pasa al llenar la columna
-El mecanismo original reutiliza SIEMPRE el mismo punto (rompes, aparece otro bloque en el mismo sitio, infinito).
-Una columna real tiene altura finita (~320 bloques en 1.21+). **No seguir implementando `processNextBlock` /
-`processHologramAndWarnings` / el cálculo de la siguiente posición hasta tener esta respuesta** — adivinar aquí es
-exactamente el error que creó `ChunkBlock` (alguien eligió un diseño sin confirmarlo).
+## Diseño confirmado por Jack (2026-10-21, tarde) — opción C
 
-Opciones planteadas:
-- **A) Bucle**: al llenar la columna, se recicla desde abajo (como el bloque único, pero en bucle de altura).
-- **B) Mina hacia abajo**: la columna existe entera desde el inicio; se cava hacia el fondo, mina vertical infinita.
-- **C)** Otra cosa.
+El jugador **mina hacia abajo / a través del chunk**, no rompe un punto fijo que respawnea infinito. No es un bucle.
 
-Hallazgo útil mientras tanto: la API de BentoBox ya trae `island.inIslandSpace(Location)` (huella X,Z, cualquier Y)
-y `island.onIsland(Location)` — sirven tal cual para la detección de "rotura dentro de la columna" en los 7 sitios
-de `BlockListener.java` que hoy comparan `l.equals(i.getCenter())`. El `process()` central re-lee SIEMPRE el bloque
-en `island.getCenter()` ignorando dónde rompió el jugador, así que detección y colocación están desacopladas — se
-puede cambiar la detección primero sin romper nada, pero la colocación (dónde aparece el siguiente bloque) necesita
-la decisión de arriba antes de tocarse.
+1. **Primer chunk (bioma inicial) con recursos GARANTIZADOS, no aleatorios**: varios árboles, hierro, piedra, tierra.
+   Debe sentirse como un trozo de mundo real, no una lista abstracta de bloques.
+2. El jugador mina su contenido real. Cuando el chunk se agota/termina su progreso, **NO se reinicia igual**:
+   aparece un **chunk nuevo con un bioma distinto** (ver §Rotación de biomas).
+3. **Cada X chunks** (umbral a definir, p. ej. cada 3-5), el bioma cambia — más variedad y dificultad progresiva.
+4. **Mobs**: aparecen según el bioma/progreso, cada vez más peligrosos a medida que se avanza.
+
+### Por qué usar Blueprints de BentoBox, no generación 100% aleatoria
+BentoBox ya trae su propio sistema de planos (`.blu`, integrado con WorldEdit) — hoy `ChunkBlock` lo usa solo para
+la plataforma de bedrock inicial (`blueprints/bedrock.blu`, 239 bytes). Es la herramienta correcta para GARANTIZAR
+contenido (árboles, menas, tierra) sin azar: se autoría un plano real por bioma (en el propio servidor con
+WorldEdit, `//copy` + `//schematic save`, o construido a mano) y se pega en la huella del chunk (`BlueprintsManager`
+de BentoBox) al empezar cada fase/bioma. Paper también trae generación nativa de árboles
+(`World#generateTree(Location, TreeType)`) y vetas de mena se pueden sembrar con el propio API de bloques — útiles
+como variedad DENTRO de un plano base, nunca como único mecanismo (porque "obligatoriamente" = garantizado, no al azar).
+
+### Rotación de biomas y mobs
+Reutilizar el sistema de fases de AOneBlock (`oneblocks/OneBlockPhase.java`, `OneBlocksManager`) tal cual, pero
+cambiando su efecto: en vez de "siguiente ítem en el punto fijo", cada fase define **qué plano de bioma pegar** y
+**qué tabla de mobs habilitar** (spawn de biomas vanilla reales por bioma objetivo, o config propia en `config.yml`
+como ya hace AOneBlock con `MagicBlockEntityEvent`). El contador de bloques rotos (`OneBlockIslands`) sigue siendo
+la métrica de progreso que decide cuándo toca la siguiente fase/bioma.
+
+### Plan de implementación (en orden, un paso por pasada, con prueba y compilación antes de avanzar)
+1. **Planos**: crear `blueprints/biome-<nombre>.blu` para 3-4 biomas iniciales (bosque, desierto, nieve, ¿cueva/
+   nether?), con WorldEdit en staging — cada uno con recursos garantizados acordes al bioma.
+2. **Detección**: cambiar los 7 sitios de `l.equals(i.getCenter())` en `BlockListener.java` por
+   `island.inIslandSpace(l)` (API nativa de BentoBox, ya confirmada) para que minar en cualquier punto de la huella
+   del chunk cuente como progreso.
+3. **Colocación/progreso**: sustituir `processNextBlock` (que hoy coloca UN bloque en el centro) por: contar
+   bloques minados -> al llegar al umbral de fase, pegar el plano de bioma correspondiente con `BlueprintsManager`
+   en la huella del chunk, y activar la tabla de mobs de esa fase.
+4. **Mobs**: configurar spawns por fase (vanilla por bioma, o `EntitySpawnEvent` propio como ya usa el addon).
+5. **Probar en staging con jugador real** antes de acercarse a Dallas: ver §Smoke test en `TEMPORADA2_STAGING.md`.
+
+Paso 2 es independiente y seguro de hacer ya (no depende de los planos); pasos 1, 3 y 4 van juntos porque sin
+planos reales la colocación no tiene qué pegar.

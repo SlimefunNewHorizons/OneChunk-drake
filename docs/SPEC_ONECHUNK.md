@@ -38,3 +38,21 @@ Investigación completa en el ticket #401 de SAORI (`ai-hub`, `saori_orchestrado
 - Licencia EPL-2.0 se mantiene íntegra; créditos a tastybento/BentoBoxWorld en el README.
 - Compilar siempre con `~/ai-hub/scripts/build_seguro.sh`.
 - Un cambio por pasada, con prueba, documentado en `docs/proactivo/BITACORA.md`.
+
+## Decisión de diseño pendiente (Jack, preguntada 2026-10-21): qué pasa al llenar la columna
+El mecanismo original reutiliza SIEMPRE el mismo punto (rompes, aparece otro bloque en el mismo sitio, infinito).
+Una columna real tiene altura finita (~320 bloques en 1.21+). **No seguir implementando `processNextBlock` /
+`processHologramAndWarnings` / el cálculo de la siguiente posición hasta tener esta respuesta** — adivinar aquí es
+exactamente el error que creó `ChunkBlock` (alguien eligió un diseño sin confirmarlo).
+
+Opciones planteadas:
+- **A) Bucle**: al llenar la columna, se recicla desde abajo (como el bloque único, pero en bucle de altura).
+- **B) Mina hacia abajo**: la columna existe entera desde el inicio; se cava hacia el fondo, mina vertical infinita.
+- **C)** Otra cosa.
+
+Hallazgo útil mientras tanto: la API de BentoBox ya trae `island.inIslandSpace(Location)` (huella X,Z, cualquier Y)
+y `island.onIsland(Location)` — sirven tal cual para la detección de "rotura dentro de la columna" en los 7 sitios
+de `BlockListener.java` que hoy comparan `l.equals(i.getCenter())`. El `process()` central re-lee SIEMPRE el bloque
+en `island.getCenter()` ignorando dónde rompió el jugador, así que detección y colocación están desacopladas — se
+puede cambiar la detección primero sin romper nada, pero la colocación (dónde aparece el siguiente bloque) necesita
+la decisión de arriba antes de tocarse.

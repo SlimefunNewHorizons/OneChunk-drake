@@ -1,325 +1,325 @@
-name: AOneBlock
-main: world.bentobox.aoneblock.AOneBlock
+name: OneChunk
+main: world.bentobox.onechunk.OneChunk
 version: ${version}${build.number}
 api-version: 3.22.0
 metrics: true
 icon: "STONE"
-repository: "BentoBoxWorld/AOneBlock"
+repository: "SlimefunNewHorizons/OneChunk-drake"
 
-authors: tastybento
+authors: [JackStar6677-1, tastybento]
 
 permissions:
 # Non-command permissions
-  aoneblock.island.lock:
+  onechunk.island.lock:
     description: Allows island locking in settings
     default: true
-  aoneblock.settings.*:
+  onechunk.settings.*:
     description: Allow use of settings on island
     default: true
-  aoneblock.mod.clearreset:
+  onechunk.mod.clearreset:
     description: Allow clearing of island reset limit
     default: false
-  aoneblock.mod.bypasscooldowns:
+  onechunk.mod.bypasscooldowns:
     description: Allow moderator to bypass cooldowns
     default: op
-  aoneblock.mod.bypassdelays:
+  onechunk.mod.bypassdelays:
     description: Allow moderator to bypass delays
     default: op
-  aoneblock.mod.bypassprotect:
+  onechunk.mod.bypassprotect:
     description: Allow moderator to bypass island protection
     default: op
-  aoneblock.mod.bypassexpel:
+  onechunk.mod.bypassexpel:
     description: Allow moderator to bypass island expulsion
     default: op
-  aoneblock.mod.lock:
+  onechunk.mod.lock:
     description: Allows lock or unlock of an island
     default: op
-  aoneblock.mod.bypasslock:
+  onechunk.mod.bypasslock:
     description: Bypasses an island lock
     default: op
-  aoneblock.mod.bypassban:
+  onechunk.mod.bypassban:
     description: Bypasses island ban
     default: op
-  aoneblock.admin.noban:
+  onechunk.admin.noban:
     description: Player cannot be banned from an island
     default: op
-  aoneblock.admin.noexpel:
+  onechunk.admin.noexpel:
     description: Player cannot be expelled from an island
     default: op
   # Command permissions
-  aoneblock.island:
+  onechunk.island:
     description: Allow use of '/ob' command - the main island command
     default: TRUE
-  aoneblock.island.actionbar:
+  onechunk.island.actionbar:
       description: Allow use of '/ob actionbar' command - toggle the actionbar
       default: TRUE
-  aoneblock.island.bossbar:
+  onechunk.island.bossbar:
     description: Allow use of '/ob bossbar' command - toggle the bossbar
     default: TRUE
-  aoneblock.island.home:
+  onechunk.island.home:
     description: Allow use of '/ob go' command - teleport you to your island
     default: TRUE
-  aoneblock.island.spawn:
+  onechunk.island.spawn:
     description: Allow use of '/ob spawn' command - teleport you to the spawn
     default: TRUE
-  aoneblock.island.create:
+  onechunk.island.create:
     description: Allow use of '/ob create' command - create an island, using optional blueprint (requires permission)
     default: TRUE
-  aoneblock.island.reset:
+  onechunk.island.reset:
     description: Allow use of '/ob reset' command - restart your island and remove the old one
     default: TRUE
-  aoneblock.island.info:
+  onechunk.island.info:
     description: Allow use of '/ob info' command - display info about your island or the player's island
     default: TRUE
-  aoneblock.island.settings:
+  onechunk.island.settings:
     description: Allow use of '/ob settings' command - display island settings
     default: TRUE
-  aoneblock.island.name:
+  onechunk.island.name:
     description: Allow use of '/ob setname' or '/ob resetname' command - your island name
     default: TRUE
-  aoneblock.island.language:
+  onechunk.island.language:
     description: Allow use of '/ob language' command - select language
     default: TRUE
-  aoneblock.island.ban:
+  onechunk.island.ban:
     description: Allow use of '/ob ban' or '/ob unban' or '/ob banlist' command - banned players
     default: TRUE
-  aoneblock.island.expel:
+  onechunk.island.expel:
     description: Allow use of '/ob expel' command - expel a player from your island
     default: TRUE
-  aoneblock.island.near:
+  onechunk.island.near:
     description: Allow use of '/ob near' command - show the name of neighboring islands around you
     default: TRUE
-  aoneblock.island.team:
+  onechunk.island.team:
     description: Allow use of '/ob team' command - manage your team
     default: TRUE
-  aoneblock.island.team.invite:
+  onechunk.island.team.invite:
     description: Allow use of '/ob team invite' command - invite a player to join your island
     default: TRUE
-  aoneblock.island.team.leave:
+  onechunk.island.team.leave:
     description: Allow use of '/ob team leave' command - leave your island
     default: TRUE
-  aoneblock.island.team.setowner:
+  onechunk.island.team.setowner:
     description: Allow use of '/ob team setowner' command - transfer your island ownership to a member
     default: TRUE
-  aoneblock.island.team.kick:
+  onechunk.island.team.kick:
     description: Allow use of '/ob team kick' command - remove a member from your island
     default: TRUE
-  aoneblock.island.team.accept:
+  onechunk.island.team.accept:
     description: Allow use of '/ob team accept' command - accept an invitation
     default: TRUE
-  aoneblock.island.team.reject:
+  onechunk.island.team.reject:
     description: Allow use of '/ob team reject' command - reject an invitation
     default: TRUE
-  aoneblock.island.team.coop:
+  onechunk.island.team.coop:
     description: Allow use of '/ob team coop, uncoop' commands
     default: TRUE
-  aoneblock.island.team.trust:
+  onechunk.island.team.trust:
     description: Allow use of '/ob team trust, untrust' commands
     default: TRUE
-  aoneblock.island.team.promote:
+  onechunk.island.team.promote:
     description: Allow use of '/ob team promote, demote' command
     default: TRUE
-  aoneblock.island.sethome:
+  onechunk.island.sethome:
     description: Allow use of '/ob sethome' command - set your home teleport point
     default: TRUE
-  aoneblock.island.deletehome:
+  onechunk.island.deletehome:
     description: Allow use of '/ob deletehome' command - delete a home location
     default: OP
-  aoneblock.island.renamehome:
+  onechunk.island.renamehome:
     description: Allow use of '/ob renamehome' command - rename a home location
     default: OP
-  aoneblock.island.homes:
+  onechunk.island.homes:
     description: Allow use of '/ob homes' command - list your homes
     default: OP
-  aoneblock.count:
+  onechunk.count:
     description: Allow use of '/ob count' command - show the block count and phase
     default: TRUE
-  aoneblock.phases:
+  onechunk.phases:
     description: Allow use of '/ob phases' command - show a list of all the phases
     default: FALSE
-  aoneblock.island.setcount:
+  onechunk.island.setcount:
     description: Allow use of '/ob setCount' command - set block count to previously completed value
     default: OP
-  aoneblock.respawn-block:
+  onechunk.respawn-block:
     description: Allow use of '/ob respawnBlock' command - respawns magic block in situations when they disappear
     default: TRUE
-  aoneblock.admin:
+  onechunk.admin:
     description: Allow use of '/obadmin' command - admin command
     default: OP
-  aoneblock.admin.version:
+  onechunk.admin.version:
     description: Allow use of '/obadmin version' command - display BentoBox and addons versions
     default: OP
-  aoneblock.admin.tp:
+  onechunk.admin.tp:
     description: Allow use of '/obadmin tp/tpnether/tpend' command - teleport to a player's island
     default: OP
-  aoneblock.admin.getrank:
+  onechunk.admin.getrank:
     description: Allow use of '/obadmin getrank' command - get a player's rank on their island or the island of the owner
     default: OP
-  aoneblock.admin.setrank:
+  onechunk.admin.setrank:
     description: Allow use of '/obadmin setrank' command - set a player's rank on their island or the island of the owner
     default: OP
-  aoneblock.mod.info:
+  onechunk.mod.info:
     description: Allow use of '/obadmin info' command - get info on where you are or player's island
     default: OP
-  aoneblock.mod.team:
+  onechunk.mod.team:
     description: Allow use of '/obadmin team' command - manage teams
     default: FALSE
-  aoneblock.mod.team.add:
+  onechunk.mod.team.add:
     description: Allow use of '/obadmin team add' or '/obadmin add' command - add player to owner's team
     default: OP
-  aoneblock.mod.team.disband:
+  onechunk.mod.team.disband:
     description: Allow use of '/obadmin team disband' or '/obadmin disband' command - disband owner's team
     default: OP
-  aoneblock.mod.team.fix:
+  onechunk.mod.team.fix:
     description: Allow use of '/obadmin team fix' or '/obadmin fix' command - scans and fixes cross island membership in database
     default: OP
-  aoneblock.mod.team.kick:
+  onechunk.mod.team.kick:
     description: Allow use of '/obadmin team kick' or '/obadmin kick' command - kick a player from a team
     default: OP
-  aoneblock.mod.team.setowner:
+  onechunk.mod.team.setowner:
     description: Allow use of '/obadmin team setowner' command - transfers island ownership to the player
     default: OP
-  aoneblock.admin.blueprint:
+  onechunk.admin.blueprint:
     description: Allow use of '/obadmin blueprint' command - manipulate blueprints
     default: OP
-  aoneblock.admin.blueprint.load:
+  onechunk.admin.blueprint.load:
     description: Allow use of '/obadmin blueprint load' command - load blueprint into the clipboard
     default: OP
-  aoneblock.admin.blueprint.paste:
+  onechunk.admin.blueprint.paste:
     description: Allow use of '/obadmin blueprint paste' command - paste the clipboard to your location
     default: OP
-  aoneblock.admin.blueprint.origin:
+  onechunk.admin.blueprint.origin:
     description: Allow use of '/obadmin blueprint origin' command - set the blueprint's origin to your position
     default: OP
-  aoneblock.admin.blueprint.copy:
+  onechunk.admin.blueprint.copy:
     description: Allow use of '/obadmin blueprint copy' command - copy the clipboard set by pos1 and pos2 and optionally the air blocks
     default: OP
-  aoneblock.admin.blueprint.save:
+  onechunk.admin.blueprint.save:
     description: Allow use of '/obadmin blueprint save' command - save the copied clipboard
     default: OP
-  aoneblock.admin.blueprint.rename:
+  onechunk.admin.blueprint.rename:
     description: Allow use of '/obadmin blueprint rename' command - rename a blueprint
     default: OP
-  aoneblock.admin.blueprint.delete:
+  onechunk.admin.blueprint.delete:
     description: Allow use of '/obadmin blueprint delete' command - delete the blueprint
     default: OP
-  aoneblock.admin.blueprint.pos1:
+  onechunk.admin.blueprint.pos1:
     description: Allow use of '/obadmin blueprint pos1' command - set 1st corner of cuboid clipboard
     default: OP
-  aoneblock.admin.blueprint.pos2:
+  onechunk.admin.blueprint.pos2:
     description: Allow use of '/obadmin blueprint pos2' command - set 2nd corner of cuboid clipboard
     default: OP
-  aoneblock.admin.blueprint.list:
+  onechunk.admin.blueprint.list:
     description: Allow use of '/obadmin blueprint list' command - list available blueprints
     default: OP
-  aoneblock.admin.register:
+  onechunk.admin.register:
     description: Allow use of '/obadmin register' command - register player to unowned island you are on
     default: OP
-  aoneblock.admin.unregister:
+  onechunk.admin.unregister:
     description: Allow use of '/obadmin unregister' command - unregister owner from island, but keep island blocks
     default: OP
-  aoneblock.admin.range:
+  onechunk.admin.range:
     description: Allow use of '/obadmin range' command - admin island range command
     default: OP
-  aoneblock.admin.range.display:
+  onechunk.admin.range.display:
     description: Allow use of '/obadmin range display' command - show/hide island range indicators
     default: OP
-  aoneblock.admin.range.set:
+  onechunk.admin.range.set:
     description: Allow use of '/obadmin range set' command - sets the island protected range
     default: OP
-  aoneblock.admin.range.reset:
+  onechunk.admin.range.reset:
     description: Allow use of '/obadmin range reset' command - resets the island protected range to the world default
     default: OP
-  aoneblock.admin.range.add:
+  onechunk.admin.range.add:
     description: Allow use of '/obadmin range add' command - increases the island protected range
     default: OP
-  aoneblock.admin.range.remove:
+  onechunk.admin.range.remove:
     description: Allow use of '/obadmin range remove' command - decreases the island protected range
     default: OP
-  aoneblock.admin.resets:
+  onechunk.admin.resets:
     description: Allow use of '/obadmin resets' command - edit player reset values
     default: OP
-  aoneblock.admin.resets.set:
+  onechunk.admin.resets.set:
     description: Allow use of '/obadmin resets set' command - sets how many times this player has reset his island
     default: OP
-  aoneblock.admin.resets.add:
+  onechunk.admin.resets.add:
     description: Allow use of '/obadmin resets add' command - adds this player's island reset count
     default: OP
-  aoneblock.admin.resets.remove:
+  onechunk.admin.resets.remove:
     description: Allow use of '/obadmin resets remove' command - reduces the player's island reset count
     default: OP
-  aoneblock.admin.delete:
+  onechunk.admin.delete:
     description: Allow use of '/obadmin delete' command - deletes a player's island
     default: OP
-  aoneblock.admin.why:
+  onechunk.admin.why:
     description: Allow use of '/obadmin why' command - toggle console protection debug reporting
     default: OP
-  aoneblock.admin.deaths:
+  onechunk.admin.deaths:
     description: Allow use of '/obadmin deaths' command - edit deaths of players
     default: OP
-  aoneblock.admin.deaths.reset:
+  onechunk.admin.deaths.reset:
     description: Allow use of '/obadmin deaths reset' command - resets deaths of the player
     default: OP
-  aoneblock.admin.deaths.set:
+  onechunk.admin.deaths.set:
     description: Allow use of '/obadmin deaths set' command - sets deaths of the player
     default: OP
-  aoneblock.admin.deaths.add:
+  onechunk.admin.deaths.add:
     description: Allow use of '/obadmin deaths add' command - adds deaths to the player
     default: OP
-  aoneblock.admin.deaths.remove:
+  onechunk.admin.deaths.remove:
     description: Allow use of '/obadmin deaths remove' command - removes deaths to the player
     default: OP
-  aoneblock.admin.reload:
+  onechunk.admin.reload:
     description: Allow use of '/obadmin reload' command - reload
     default: OP
-  aoneblock.admin.setspawn:
+  onechunk.admin.setspawn:
     description: Allow use of '/obadmin setspawn' command - set an island as spawn for this gamemode
     default: OP
-  aoneblock.admin.setspawnpoint:
+  onechunk.admin.setspawnpoint:
     description: Allow use of '/obadmin setspawnpoint' command - set current location as spawn point for this island
     default: OP
-  aoneblock.admin.resetflags:
+  onechunk.admin.resetflags:
     description: Allow use of '/obadmin resetflags' command - Reset all islands to default flag settings in config.yml
     default: OP
-  aoneblock.mod.switch:
+  onechunk.mod.switch:
     description: Allow use of '/obadmin switch' command - switch on/off protection bypass
     default: OP
-  aoneblock.admin.purge:
+  onechunk.admin.purge:
     description: Allow use of '/obadmin purge' command - purge islands abandoned for more than [days]
     default: OP
-  aoneblock.admin.purge.status:
+  onechunk.admin.purge.status:
     description: Allow use of '/obadmin purge status' command - displays the status of the purge
     default: OP
-  aoneblock.admin.purge.stop:
+  onechunk.admin.purge.stop:
     description: Allow use of '/obadmin purge stop' command - stop a purge in progress
     default: OP
-  aoneblock.admin.purge.unowned:
+  onechunk.admin.purge.unowned:
     description: Allow use of '/obadmin purge unowned' command - purge unowned islands
     default: OP
-  aoneblock.admin.purge.protect:
+  onechunk.admin.purge.protect:
     description: Allow use of '/obadmin purge protect' command - toggle island purge protection
     default: OP
-  aoneblock.admin.settings:
+  onechunk.admin.settings:
     description: Allow use of '/obadmin settings' command - open settings GUI or set settings
     default: OP
-  aoneblock.admin.setprotectionlocation:
+  onechunk.admin.setprotectionlocation:
     description: Allow use of '/obadmin setprotectionlocation' command - set current location or [x y z] as center of island's protection area
     default: OP
-  aoneblock.mod.deletehomes:
+  onechunk.mod.deletehomes:
     description: Allow use of '/obadmin deletehomes' command - deletes all named homes from an island
     default: OP
-  aoneblock.mod.resetname:
+  onechunk.mod.resetname:
     description: Allow use of '/obadmin resetname' command - reset player island name
     default: OP
-  aoneblock.admin.setcount:
+  onechunk.admin.setcount:
     description: Allow use of '/obadmin setcount' command - set player's block count
     default: OP
-  aoneblock.admin.setchest:
+  onechunk.admin.setchest:
     description: Allow use of '/obadmin setchest' command - put the looked-at chest in a phase with the rarity specified
     default: OP
-  aoneblock.admin.sanity:
+  onechunk.admin.sanity:
     description: Allow use of '/obadmin sanity' command - display a sanity check of the phase probabilities in the console
     default: OP
-  aoneblock.admin.phases:
+  onechunk.admin.phases:
     description: Allow use of '/obadmin phases' command - open the phase order editor
     default: OP 

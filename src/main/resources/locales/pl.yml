@@ -1,13 +1,13 @@
 protection:
   flags:
-    MAGIC_BLOCK:
+    ONECHUNK_MAGIC_BLOCK:
       name: Ochrona Magicznego Bloku
       description: |-
         <aqua>Ranga, która może zniszczyć
         magiczny blok, jeśli
         może niszczyć bloki.</aqua>
       hint: "<red>Twoja ranga nie może zniszczyć magicznego bloku!</red>"
-    START_SAFETY:
+    ONECHUNK_START_SAFETY:
       name: Bezpieczeństwo Początkowe
       description: |-
         <aqua>Zapobiega poruszaniu się
@@ -15,18 +15,18 @@ protection:
         aby nie spadli.</aqua>
       hint: "<red>Ruch zablokowany ze względów bezpieczeństwa na kolejne [number] sekund!</red>"
       free-to-move: "<green>Możesz się swobodnie poruszać. Bądź ostrożny!</green>"
-    ONEBLOCK_BOSSBAR:
+    ONECHUNK_BOSSBAR:
       name: Pasek Bossa
       description: |-
         <aqua>Pokazuje pasek statusu
         dla każdej fazy.</aqua>
-    ONEBLOCK_ACTIONBAR:
+    ONECHUNK_ACTIONBAR:
       name: Pasek Akcji
       description: |-
         <aqua>Pokazuje status
         dla każdej fazy
         na Pasku Akcji.</aqua>
-aoneblock:
+onechunk:
   bossbar:
     title: Pozostałe bloki
     status: '<green>Bloki fazowe </green><aqua>[done] </aqua><light_purple>/ </light_purple><aqua>[total]</aqua>'

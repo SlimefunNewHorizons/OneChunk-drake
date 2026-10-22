@@ -5,13 +5,13 @@
 
 protection:
   flags:
-    MAGIC_BLOCK:
+    ONECHUNK_MAGIC_BLOCK:
       name: Magic Block Protection
       description: |-
         <aqua>Rank that can break the magic
         block if they can break blocks.</aqua>
       hint: "<red>Your rank cannot break the magic block!</red>"
-    START_SAFETY:
+    ONECHUNK_START_SAFETY:
       name: Starting Safety
       description: |-
         <aqua>Prevents new players
@@ -19,19 +19,19 @@ protection:
         so they don't fall off.</aqua>
       hint: "<red>Movement blocked for safety for [number] more seconds!</red>"
       free-to-move: "<green>You are free to move. Be careful!</green>"
-    ONEBLOCK_BOSSBAR:
+    ONECHUNK_BOSSBAR:
       name: Boss Bar
       description: |-
         <aqua>Shows a status bar
         for each phase.</aqua>
-    ONEBLOCK_ACTIONBAR:
+    ONECHUNK_ACTIONBAR:
       name: Action Bar
       description: |-
         <aqua>Shows a status
         for each phase
         in the Action Bar.</aqua>
 
-aoneblock:
+onechunk:
   bossbar:
     title: "Blocks remaining"
     # status: "&a Phase blocks &b [total]. Blocks left: [todo]"
@@ -180,4 +180,4 @@ aoneblock:
       click-to-next: "<yellow>Click </yellow><gray>to view next page.</gray>"
       click-to-change: "<yellow>Click </yellow><gray>to change.</gray>"
   island:
-    starting-hologram: "<green>Welcome to AOneBlock\n</green><yellow>Break This Block to Begin</yellow>"
+    starting-hologram: "<green>Welcome to OneChunk\n</green><yellow>Break This Block to Begin</yellow>"

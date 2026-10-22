@@ -1,5 +1,5 @@
-name: BentoBox-AOneBlock
-main: world.bentobox.aoneblock.AOneBlockPladdon
+name: BentoBox-OneChunk
+main: world.bentobox.onechunk.OneChunkPladdon
 version: ${project.version}${build.number}
 api-version: "1.21"
 

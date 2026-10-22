@@ -1,13 +1,13 @@
 protection:
   flags:
-    MAGIC_BLOCK:
+    ONECHUNK_MAGIC_BLOCK:
       name: 魔法ブロック保護
       description: |-
         <aqua>ブロックを破壊できる場合、
         魔法ブロックを破壊できる
         ランク。</aqua>
       hint: "<red>あなたのランクでは魔法ブロックを破壊できません！</red>"
-    START_SAFETY:
+    ONECHUNK_START_SAFETY:
       name: 開始時の安全対策
       description: |-
         <aqua>新しいプレイヤーが
@@ -15,18 +15,18 @@ protection:
         落下を防ぎます。</aqua>
       hint: "<red>安全のため、あと [number] 秒間移動がブロックされています！</red>"
       free-to-move: "<green>自由に動けます。注意してください！</green>"
-    ONEBLOCK_BOSSBAR:
+    ONECHUNK_BOSSBAR:
       name: ボスバー
       description: |-
         <aqua>各フェーズの
         ステータスバーを表示します。</aqua>
-    ONEBLOCK_ACTIONBAR:
+    ONECHUNK_ACTIONBAR:
       name: アクションバー
       description: |-
         <aqua>各フェーズの
         ステータスを
         アクションバーに表示します。</aqua>
-aoneblock:
+onechunk:
   bossbar:
     title: 残りのブロック
     status: '位相ブロック <aqua>[done] </aqua><light_purple>/ </light_purple><aqua>[total]</aqua>'
@@ -128,5 +128,5 @@ aoneblock:
       click-to-change: '<yellow></yellow><gray>をクリックして変更します。</gray>'
   island:
     starting-hologram: |-
-      <green>AOneBlock へようこそ
+      <green>OneChunk へようこそ
       </green><yellow>このブロックを壊して開始してください</yellow>

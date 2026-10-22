@@ -1,13 +1,13 @@
 protection:
   flags:
-    MAGIC_BLOCK:
+    ONECHUNK_MAGIC_BLOCK:
       name: Büyülü Blok Koruması
       description: |-
         <aqua>Blokları kırabilirlerse
         büyülü bloğu kırabilecek
         rütbe.</aqua>
       hint: "<red>Rütbeniz büyülü bloğu kıramaz!</red>"
-    START_SAFETY:
+    ONECHUNK_START_SAFETY:
       name: Başlangıç Güvenliği
       description: |-
         <aqua>Yeni oyuncuların 1 dakika
@@ -15,18 +15,18 @@ protection:
         engelleyerek düşmelerini önler.</aqua>
       hint: "<red>Güvenlik için hareket [number] saniye daha engellendi!</red>"
       free-to-move: "<green>Serbestçe hareket edebilirsiniz. Dikkatli olun!</green>"
-    ONEBLOCK_BOSSBAR:
+    ONECHUNK_BOSSBAR:
       name: Boss Çubuğu
       description: |-
         <aqua>Her aşama için bir
         durum çubuğu gösterir.</aqua>
-    ONEBLOCK_ACTIONBAR:
+    ONECHUNK_ACTIONBAR:
       name: Eylem Çubuğu (Action Bar)
       description: |-
         <aqua>Her aşama için bir
         durumu Eylem Çubuğunda
         gösterir.</aqua>
-aoneblock:
+onechunk:
   bossbar:
     title: Kalan bloklar
     status: '<green>Faz blokları </green><aqua>[done] </aqua><light_purple>/ </light_purple><aqua>[total]</aqua>'

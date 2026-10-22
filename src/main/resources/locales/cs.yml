@@ -1,13 +1,13 @@
 protection:
   flags:
-    MAGIC_BLOCK:
+    ONECHUNK_MAGIC_BLOCK:
       name: Ochrana Kouzelného Bloku
       description: |-
         <aqua>Hodnost, která může rozbít
         kouzelný blok, pokud
         dokáže rozbíjet bloky.</aqua>
       hint: "<red>Vaše hodnost nemůže rozbít kouzelný blok!</red>"
-    START_SAFETY:
+    ONECHUNK_START_SAFETY:
       name: Počáteční Bezpečnost
       description: |-
         <aqua>Zabrání novým hráčům
@@ -15,18 +15,18 @@ protection:
         aby nespadli.</aqua>
       hint: "<red>Pohyb zablokován kvůli bezpečnosti na [number] sekund!</red>"
       free-to-move: "<green>Můžete se volně pohybovat. Buďte opatrní!</green>"
-    ONEBLOCK_BOSSBAR:
+    ONECHUNK_BOSSBAR:
       name: Boss Bar
       description: |-
         <aqua>Zobrazuje stavový panel
         pro každou fázi.</aqua>
-    ONEBLOCK_ACTIONBAR:
+    ONECHUNK_ACTIONBAR:
       name: Action Bar
       description: |-
         <aqua>Zobrazuje stav
         pro každou fázi
         v Action Baru.</aqua>
-aoneblock:
+onechunk:
   bossbar:
     title: Bloky zbývající
     status: '<green>Fázové bloky & B [done] & d / & b [total]</green>'
@@ -128,5 +128,5 @@ aoneblock:
       click-to-change: '<yellow>Klikněte na </yellow><gray>pro změnu.</gray>'
   island:
     starting-hologram: |-
-      <green>Vítejte v AOneBlock
+      <green>Vítejte v OneChunk
       </green><yellow>Prolomte tento blok</yellow>

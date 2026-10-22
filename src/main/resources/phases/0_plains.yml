@@ -1,9 +1,9 @@
 # ============================================================================
-#  AOneBlock phase file - PLAINS
+#  OneChunk phase file - PLAINS
 # ============================================================================
-#  This file is the reference example. Every option AOneBlock supports is
+#  This file is the reference example. Every option OneChunk supports is
 #  documented here, so read this one first before editing the others.
-#  Full docs: https://docs.bentobox.world/en/latest/gamemodes/AOneBlock/Phases/
+#  Full docs: https://docs.bentobox.world/en/latest/gamemodes/OneChunk/Phases/
 #
 #  ---------------------------------------------------------------------------
 #  WHAT DO THE NUMBERS MEAN?
@@ -16,7 +16,7 @@
 #     They are NOT how many of that block will appear, and they are NOT a
 #     percentage. They are relative weights - tickets in a raffle.
 #
-#     Every time the magic block is broken, AOneBlock adds up every weight in
+#     Every time the magic block is broken, OneChunk adds up every weight in
 #     the phase and picks one entry at random, in proportion to its weight:
 #
 #         chance of an entry = its weight / total of ALL weights in the phase

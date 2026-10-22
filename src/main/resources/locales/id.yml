@@ -1,13 +1,13 @@
 protection:
   flags:
-    MAGIC_BLOCK:
+    ONECHUNK_MAGIC_BLOCK:
       name: Perlindungan Blok Ajaib
       description: |-
         <aqua>Pangkat yang dapat
         menghancurkan blok ajaib
         jika mereka dapat menghancurkan blok.</aqua>
       hint: "<red>Pangkatmu tidak dapat menghancurkan blok ajaib!</red>"
-    START_SAFETY:
+    ONECHUNK_START_SAFETY:
       name: Keamanan Awal
       description: |-
         <aqua>Mencegah pemain baru
@@ -15,18 +15,18 @@ protection:
         agar mereka tidak jatuh.</aqua>
       hint: "<red>Pergerakan diblokir untuk keselamatan selama [number] detik lagi!</red>"
       free-to-move: "<green>Anda bebas bergerak. Hati-hati!</green>"
-    ONEBLOCK_BOSSBAR:
+    ONECHUNK_BOSSBAR:
       name: Boss Bar
       description: |-
         <aqua>Menampilkan bilah status
         untuk setiap fase.</aqua>
-    ONEBLOCK_ACTIONBAR:
+    ONECHUNK_ACTIONBAR:
       name: Action Bar
       description: |-
         <aqua>Menampilkan status
         untuk setiap fase
         di Action Bar.</aqua>
-aoneblock:
+onechunk:
   bossbar:
     title: Blok tersisa
     status: 'Blok fase <aqua>[done] </aqua><light_purple>/ </light_purple><aqua>[total]</aqua>'
@@ -129,5 +129,5 @@ aoneblock:
       click-to-change: '<yellow>Klik </yellow><gray>untuk berubah.</gray>'
   island:
     starting-hologram: |-
-      <green>Selamat datang di AONEBLOCK
+      <green>Selamat datang di ONECHUNK
       </green><yellow>Hancurkan blok ini untuk memulai</yellow>

@@ -1,13 +1,13 @@
 protection:
   flags:
-    MAGIC_BLOCK:
+    ONECHUNK_MAGIC_BLOCK:
       name: Bảo Vệ Khối Ma Thuật
       description: |-
         <aqua>Xếp hạng có thể phá
         khối ma thuật nếu họ
         có thể phá khối.</aqua>
       hint: "<red>Xếp hạng của bạn không thể phá khối ma thuật!</red>"
-    START_SAFETY:
+    ONECHUNK_START_SAFETY:
       name: An Toàn Khởi Đầu
       description: |-
         <aqua>Ngăn người chơi mới
@@ -15,18 +15,18 @@ protection:
         để họ không bị rơi.</aqua>
       hint: "<red>Di chuyển bị chặn vì lý do an toàn trong [number] giây nữa!</red>"
       free-to-move: "<green>Bạn được phép di chuyển tự do. Hãy cẩn thận!</green>"
-    ONEBLOCK_BOSSBAR:
+    ONECHUNK_BOSSBAR:
       name: Thanh Boss
       description: |-
         <aqua>Hiển thị thanh trạng thái
         cho mỗi giai đoạn.</aqua>
-    ONEBLOCK_ACTIONBAR:
+    ONECHUNK_ACTIONBAR:
       name: Thanh Hành Động (Action Bar)
       description: |-
         <aqua>Hiển thị trạng thái
         cho mỗi giai đoạn
         trên Thanh Hành Động.</aqua>
-aoneblock:
+onechunk:
   bossbar:
     title: Khối còn lại
     status: '<green>Khối pha </green><aqua>[done] </aqua><light_purple>/ </light_purple><aqua>[total]</aqua>'

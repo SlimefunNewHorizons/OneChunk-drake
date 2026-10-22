@@ -1,31 +1,31 @@
 protection:
   flags:
-    MAGIC_BLOCK:
+    ONECHUNK_MAGIC_BLOCK:
       name: 魔法方块保护
       description: |-
         <aqua>如果玩家可以破坏方块，
         则该等级可以破坏
         魔法方块。</aqua>
       hint: "<red>您的等级无法破坏魔法方块！</red>"
-    START_SAFETY:
+    ONECHUNK_START_SAFETY:
       name: 初始安全保护
       description: |-
         <aqua>阻止新玩家在1分钟内
         移动，以防他们跌落。</aqua>
       hint: "<red>出于安全考虑，移动已被阻止 [number] 秒！</red>"
       free-to-move: "<green>您可以自由移动了。请小心！</green>"
-    ONEBLOCK_BOSSBAR:
+    ONECHUNK_BOSSBAR:
       name: Boss 血条
       description: |-
         <aqua>为每个阶段
         显示一个状态条。</aqua>
-    ONEBLOCK_ACTIONBAR:
+    ONECHUNK_ACTIONBAR:
       name: 动作栏
       description: |-
         <aqua>在动作栏中
         显示每个阶段
         的状态。</aqua>
-aoneblock:
+onechunk:
   bossbar:
     title: 剩余的块
     status: '<green>相位块</green><aqua> [done] </aqua><light_purple>/ </light_purple><aqua>[total]</aqua>'
@@ -127,5 +127,5 @@ aoneblock:
       click-to-change: '<yellow>单击 </yellow><gray>进行更改。</gray>'
   island:
     starting-hologram: |-
-      <green>欢迎来到 AOneBlock
+      <green>欢迎来到 OneChunk
       </green><yellow>破坏此方块以开始</yellow>

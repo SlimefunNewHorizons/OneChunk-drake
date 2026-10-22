@@ -1,4 +1,4 @@
-# Phase index for AOneBlock.
+# Phase index for OneChunk.
 #
 # This file is the source of truth for which phases load, in what order, and
 # how long each one is. It is read BEFORE any phase file is parsed, so phases

@@ -1,13 +1,13 @@
 protection:
   flags:
-    MAGIC_BLOCK:
+    ONECHUNK_MAGIC_BLOCK:
       name: Захист Магічного Блоку
       description: |-
         <aqua>Ранг, який може зламати
         магічний блок, якщо
         може ламати блоки.</aqua>
       hint: "<red>Ваш ранг не може зламати магічний блок!</red>"
-    START_SAFETY:
+    ONECHUNK_START_SAFETY:
       name: Початкова Безпека
       description: |-
         <aqua>Запобігає руху нових гравців
@@ -15,18 +15,18 @@ protection:
         щоб вони не впали.</aqua>
       hint: "<red>Рух заблоковано з міркувань безпеки ще на [number] секунд!</red>"
       free-to-move: "<green>Ви можете вільно рухатися. Будьте обережні!</green>"
-    ONEBLOCK_BOSSBAR:
+    ONECHUNK_BOSSBAR:
       name: Boss Bar
       description: |-
         <aqua>Показує панель стану
         для кожної фази.</aqua>
-    ONEBLOCK_ACTIONBAR:
+    ONECHUNK_ACTIONBAR:
       name: Action Bar
       description: |-
         <aqua>Показує статус
         для кожної фази
         в Action Bar.</aqua>
-aoneblock:
+onechunk:
   bossbar:
     title: Блоки, що залишилися
     status: '<green>Фазові блоки </green><aqua>[done] </aqua><light_purple>/ </light_purple><aqua>[total]</aqua>'
@@ -128,5 +128,5 @@ aoneblock:
       click-to-change: '<yellow>Натисніть </yellow><gray>, щоб змінити.</gray>'
   island:
     starting-hologram: |-
-      <green>Ласкаво просимо до AOneBlock
+      <green>Ласкаво просимо до OneChunk
       </green><yellow>Розбийте цей блок, щоб почати</yellow>

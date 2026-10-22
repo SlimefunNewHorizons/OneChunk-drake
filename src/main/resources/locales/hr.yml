@@ -1,13 +1,13 @@
 protection:
   flags:
-    MAGIC_BLOCK:
+    ONECHUNK_MAGIC_BLOCK:
       name: Zaštita Magičnog Bloka
       description: |-
         <aqua>Rang koji može razbiti
         magični blok, ako
         može razbiti blokove.</aqua>
       hint: "<red>Vaš rang ne može razbiti magični blok!</red>"
-    START_SAFETY:
+    ONECHUNK_START_SAFETY:
       name: Početna Sigurnost
       description: |-
         <aqua>Sprječava nove igrače
@@ -15,18 +15,18 @@ protection:
         da ne padnu.</aqua>
       hint: "<red>Kretanje je blokirano iz sigurnosnih razloga još [number] sekundi!</red>"
       free-to-move: "<green>Slobodni ste za kretanje. Budite oprezni!</green>"
-    ONEBLOCK_BOSSBAR:
+    ONECHUNK_BOSSBAR:
       name: Boss Traka
       description: |-
         <aqua>Prikazuje statusnu traku
         za svaku fazu.</aqua>
-    ONEBLOCK_ACTIONBAR:
+    ONECHUNK_ACTIONBAR:
       name: Traka Akcije
       description: |-
         <aqua>Prikazuje status
         za svaku fazu
         u Traci Akcije.</aqua>
-aoneblock:
+onechunk:
   bossbar:
     title: Preostali blokovi
     status: '<green>Fazni blokovi </green><aqua>[done] </aqua><light_purple>/ </light_purple><aqua>[total]</aqua>'
@@ -128,5 +128,5 @@ aoneblock:
       click-to-change: '<yellow>Kliknite </yellow><gray>za promjenu.</gray>'
   island:
     starting-hologram: |-
-      <green>Dobro došli u AOneBlock
+      <green>Dobro došli u OneChunk
       </green><yellow>Razbijte ovaj blok za početak</yellow>

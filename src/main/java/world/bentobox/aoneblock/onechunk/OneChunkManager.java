@@ -8,8 +8,12 @@ import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Tameable;
 import org.bukkit.entity.Player;
+import org.bukkit.util.BoundingBox;
+import org.bukkit.util.Vector;
 
 import world.bentobox.aoneblock.AOneBlock;
 import world.bentobox.aoneblock.dataobjects.OneBlockIslands;
@@ -53,12 +57,41 @@ public class OneChunkManager {
                 depth, biome, index, seed);
         is.setSolidInChunk(r.solidBlocks());
         is.setBrokenInChunk(0);
+        int floor = OneChunkGenerator.floorY(c.getBlockY(), depth);
+        // Primero poner a salvo lo que había dentro (el terreno nuevo ya está generado encima) y SOLO DESPUÉS sembrar los
+        // mobs nuevos: al revés, la reubicación los eliminaría.
+        relocateEntities(c.getWorld(), (c.getBlockX() >> 4) << 4, (c.getBlockZ() >> 4) << 4, floor,
+                OneChunkGenerator.topY(c.getBlockY()), r.spawn());
         spawnMobs(c.getWorld(), c, biome, index, new Random(seed ^ 0x5DEECE66DL));
-        for (Player p : island.getPlayersOnIsland()) {
-            if (inFootprint(c, p.getLocation())) {
-                p.teleportAsync(r.spawn());
+    }
+
+    /**
+     * Pone a salvo todo lo que estaba dentro del volumen cuando se regeneró el chunk (el terreno nuevo se genera encima):
+     * jugadores (miembros o visitantes) y mascotas -> a la superficie, objetos tirados -> a la superficie, y
+     * cualquier otro ser vivo -> se elimina (quedaría sepultado y se asfixiaría).
+     * <p>
+     * Usa teletransporte SÍNCRONO en el mismo tick de la generación: con {@code teleportAsync} el jugador pasaba uno o
+     * más ticks incrustado en bloques sólidos.
+     *
+     * @return número de jugadores trasladados
+     */
+    public static int relocateEntities(World world, int ox, int oz, int floor, int top, Location spawn) {
+        int moved = 0;
+        // Caja del volumen (más 40 bloques por encima: jugadores volando o cayendo sobre el chunk)
+        for (Entity e : world.getNearbyEntities(BoundingBox.of(new Vector(ox, floor, oz), new Vector(ox + 16, top + 40, oz + 16)))) {
+            if (e instanceof Player p) {
+                p.teleport(spawn);
+                p.setFallDistance(0f);
+                p.setVelocity(new Vector(0, 0, 0));
+                p.sendMessage("§6OneChunk §7» §eEl chunk se regeneró: te llevamos a la superficie.");
+                moved++;
+            } else if (e instanceof Item || (e instanceof Tameable t && t.isTamed())) {
+                e.teleport(spawn);
+            } else if (e instanceof LivingEntity) {
+                e.remove();
             }
         }
+        return moved;
     }
 
     /**

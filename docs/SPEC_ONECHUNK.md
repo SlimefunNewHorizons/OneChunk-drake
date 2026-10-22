@@ -104,7 +104,7 @@ sustitución es `OneChunkGenerator.generate(...)`.
 deshabilitaba al arrancar (los 4 fallos de `AOneBlockTest`). Con setters: 590 pruebas verdes con JDK 25 (9 nuevas).
 
 **Lo que NO está hecho / hay que probar con un jugador real en STAGING (nunca directo en Dallas):**
-1. Que el jugador aparezca en un sitio seguro al crear la isla y al regenerar (hay pruebas del hueco, no del teleport real).
+1. Que el jugador aparezca en un sitio seguro al crear la isla (al regenerar ya está cubierto: `OneChunkManager.relocateEntities` traslada SÍNCRONAMENTE, en el mismo tick, a jugadores —miembros y visitantes— y objetos tirados/mascotas a la superficie, y elimina los mobs viejos; 5 pruebas en `OneChunkRelocationTest`). Falta ver el teleport en un servidor real.
 2. Rendimiento al regenerar (≈10 mil `setType` en el hilo principal; si da tirones, repartir en ticks).
 3. Boss bar / `/ob count` muestran "bloques de fase" de OneBlock: en OneChunk no significan nada; falta adaptarlos.
 4. Los mundos nether/end de la modalidad siguen siendo los de OneBlock.

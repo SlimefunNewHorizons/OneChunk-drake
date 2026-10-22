@@ -29,6 +29,10 @@ public class NoBlockHandler implements Listener {
         if (!addon.inWorld(e.getRespawnLocation().getWorld())) {
             return;
         }
+        if (addon.getSettings() != null && addon.getSettings().isOneChunkEnabled()) {
+            // OneChunk: el centro es parte del terreno que se mina; reponerlo sería un bloque gratis tras morir.
+            return;
+        }
         // Check if block is air
         Island island = addon.getIslands().getIsland(e.getRespawnLocation().getWorld(), e.getPlayer().getUniqueId());
         if (island != null && Objects.requireNonNull(island.getCenter()).getBlock().isEmpty()) {

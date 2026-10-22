@@ -264,6 +264,23 @@ public class Settings implements WorldSettings {
     @ConfigEntry(path = "world.onechunk.enabled")
     private boolean oneChunkEnabled;
 
+    @ConfigComment("OneChunk: how many chunks are generated before the biome changes.")
+    @ConfigEntry(path = "world.onechunk.chunks-per-biome")
+    private int oneChunkChunksPerBiome = 3;
+
+    @ConfigComment("OneChunk: depth in blocks of every generated chunk (surface at the island height, bedrock floor below).")
+    @ConfigComment("Min 8, max 64.")
+    @ConfigEntry(path = "world.onechunk.depth")
+    private int oneChunkDepth = 12;
+
+    @ConfigComment("OneChunk: fraction (0.5-1.0) of the generated blocks that must be mined before the next chunk appears.")
+    @ConfigEntry(path = "world.onechunk.clear-fraction")
+    private double oneChunkClearFraction = 0.9;
+
+    @ConfigComment("OneChunk: maximum hostile mobs spawned with each new chunk (the count grows with every chunk cleared).")
+    @ConfigEntry(path = "world.onechunk.max-mobs")
+    private int oneChunkMaxMobs = 12;
+
     @ConfigComment("Sea height (don't changes this mid-game unless you delete the world)")
     @ConfigComment("Minimum is 0")
     @ConfigComment("If sea height is less than about 10, then players will drop right through it")
@@ -760,6 +777,42 @@ public class Settings implements WorldSettings {
      */
     public boolean isOneChunkEnabled() {
         return oneChunkEnabled;
+    }
+
+    public void setOneChunkEnabled(boolean oneChunkEnabled) {
+        this.oneChunkEnabled = oneChunkEnabled;
+    }
+
+    public void setOneChunkChunksPerBiome(int oneChunkChunksPerBiome) {
+        this.oneChunkChunksPerBiome = oneChunkChunksPerBiome;
+    }
+
+    public void setOneChunkDepth(int oneChunkDepth) {
+        this.oneChunkDepth = oneChunkDepth;
+    }
+
+    public void setOneChunkClearFraction(double oneChunkClearFraction) {
+        this.oneChunkClearFraction = oneChunkClearFraction;
+    }
+
+    public void setOneChunkMaxMobs(int oneChunkMaxMobs) {
+        this.oneChunkMaxMobs = oneChunkMaxMobs;
+    }
+
+    public int getOneChunkChunksPerBiome() {
+        return Math.max(1, oneChunkChunksPerBiome);
+    }
+
+    public int getOneChunkDepth() {
+        return Math.min(64, Math.max(8, oneChunkDepth));
+    }
+
+    public double getOneChunkClearFraction() {
+        return Math.min(1.0, Math.max(0.5, oneChunkClearFraction));
+    }
+
+    public int getOneChunkMaxMobs() {
+        return Math.max(0, oneChunkMaxMobs);
     }
 
     /**

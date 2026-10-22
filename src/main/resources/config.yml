@@ -57,6 +57,17 @@ world:
     # Progression applies to every block in the 16x16 chunk containing the island center.
     # Disabled by default to preserve existing AOneBlock worlds until a OneChunk world is staged.
     enabled: false
+    # Mining gameplay: the player mines THROUGH a generated chunk (nothing respawns in the mined holes). The first
+    # chunk is always a forest with guaranteed trees, iron, coal, stone and dirt. When the chunk is cleared the
+    # next one appears; every 'chunks-per-biome' chunks the biome rotates (forest, desert, snow, jungle, caves)
+    # and the hostile mobs that spawn with each new chunk get more numerous and dangerous.
+    chunks-per-biome: 3
+    # Depth in blocks of every generated chunk (surface at the island height, bedrock floor below). Min 8, max 64.
+    depth: 12
+    # Fraction (0.5-1.0) of the generated blocks that must be mined before the next chunk appears.
+    clear-fraction: 0.9
+    # Maximum hostile mobs spawned with each new chunk.
+    max-mobs: 12
   # World difficulty setting - PEACEFUL, EASY, NORMAL, HARD
   # Other plugins may override this setting
   difficulty: NORMAL

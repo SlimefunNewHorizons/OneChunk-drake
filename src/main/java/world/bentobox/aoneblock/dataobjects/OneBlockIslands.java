@@ -50,7 +50,47 @@ public class OneBlockIslands implements DataObject {
     @Expose
     private long lastPhaseChangeTime = 0;
 
+    /**
+     * OneChunk: chunks completamente minados (cada uno genera el siguiente; cada X cambia el bioma).
+     */
+    @Expose
+    private int chunksCleared;
+    /**
+     * OneChunk: bloques minados del chunk actual.
+     */
+    @Expose
+    private int brokenInChunk;
+    /**
+     * OneChunk: bloques sólidos minables que generó el chunk actual (el chunk se da por agotado al minar el 90 %).
+     */
+    @Expose
+    private int solidInChunk;
+
     private Queue<OneBlockObject> queue = new LinkedList<>();
+
+    public int getChunksCleared() {
+        return chunksCleared;
+    }
+
+    public void setChunksCleared(int chunksCleared) {
+        this.chunksCleared = chunksCleared;
+    }
+
+    public int getBrokenInChunk() {
+        return brokenInChunk;
+    }
+
+    public void setBrokenInChunk(int brokenInChunk) {
+        this.brokenInChunk = brokenInChunk;
+    }
+
+    public int getSolidInChunk() {
+        return solidInChunk;
+    }
+
+    public void setSolidInChunk(int solidInChunk) {
+        this.solidInChunk = solidInChunk;
+    }
 
     /**
      * @return the phaseName

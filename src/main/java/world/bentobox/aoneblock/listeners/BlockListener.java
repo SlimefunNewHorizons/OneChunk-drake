@@ -62,6 +62,7 @@ import world.bentobox.aoneblock.dataobjects.OneBlockIslands;
 import world.bentobox.aoneblock.events.MagicBlockEntityEvent;
 import world.bentobox.aoneblock.events.MagicBlockEvent;
 import world.bentobox.aoneblock.events.MagicBlockPhaseEvent;
+import world.bentobox.aoneblock.onechunk.OneChunkManager;
 import world.bentobox.aoneblock.oneblocks.OneBlockObject;
 import world.bentobox.aoneblock.oneblocks.OneBlockPhase;
 import world.bentobox.aoneblock.oneblocks.OneBlocksManager;
@@ -164,8 +165,11 @@ public class BlockListener extends FlagListener implements Listener {
      * Constructs the BlockListener.
      * @param addon - The AOneBlock addon instance.
      */
+    private final OneChunkManager oneChunk;
+
     public BlockListener(@NonNull AOneBlock addon) {
         this.addon = addon;
+        this.oneChunk = new OneChunkManager(addon);
         handler = new Database<>(addon, OneBlockIslands.class);
         cache = new HashMap<>();
         oneBlocksManager = addon.getOneBlockManager();
@@ -291,6 +295,18 @@ public class BlockListener extends FlagListener implements Listener {
             return;
         }
         Location l = e.getBlock().getLocation();
+        if (isOneChunkEnabled()) {
+            // OneChunk: el bloque roto se queda roto (se mina a través del chunk); solo se mide el avance.
+            addon.getIslands().getIslandAt(l).filter(i -> isProgressBlock(i, l)).ifPresent(i -> {
+                OneBlockIslands is = getIsland(i);
+                is.incrementBlockNumber();
+                oneChunk.onBlockBroken(i, is);
+                if (is.getBrokenInChunk() % OneChunkManager.SCAN_EVERY == 0) {
+                    handler.saveObjectAsync(is);
+                }
+            });
+            return;
+        }
         addon.getIslands().getIslandAt(l).filter(i -> isProgressBlock(i, l))
         .ifPresent(i -> process(e, i, e.getPlayer(), e.getPlayer().getWorld(), e.getBlock()));
     }
@@ -303,7 +319,7 @@ public class BlockListener extends FlagListener implements Listener {
      */
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onBlockBreakByMinion(final EntityInteractEvent e) {
-        if (!addon.inWorld(e.getBlock().getWorld()) || !e.getEntityType().equals(EntityType.ARMOR_STAND)) {
+        if (isOneChunkEnabled() || !addon.inWorld(e.getBlock().getWorld()) || !e.getEntityType().equals(EntityType.ARMOR_STAND)) {
             return;
         }
         Location l = e.getBlock().getLocation();
@@ -318,7 +334,7 @@ public class BlockListener extends FlagListener implements Listener {
      */
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onBlockBreak(final PlayerBucketFillEvent e) {
-        if (addon.inWorld(e.getBlock().getWorld())) {
+        if (!isOneChunkEnabled() && addon.inWorld(e.getBlock().getWorld())) {
             Location l = e.getBlock().getLocation();
             addon.getIslands().getIslandAt(l).filter(i -> isProgressBlock(i, l))
             .ifPresent(i -> process(e, i, e.getPlayer(), e.getPlayer().getWorld(), e.getBlock()));
@@ -392,12 +408,21 @@ public class BlockListener extends FlagListener implements Listener {
      * @param island The island to set up.
      */
     private void setUp(@NonNull Island island) {
-        // Set the bedrock to the initial block
-        Util.getChunkAtAsync(Objects.requireNonNull(island.getCenter()))
-        .thenRun(() -> island.getCenter().getBlock().setType(Material.GRASS_BLOCK));
         // Create a database entry
         OneBlockIslands is = new OneBlockIslands(island.getUniqueId());
         cache.put(island.getUniqueId(), is);
+        if (isOneChunkEnabled()) {
+            // OneChunk: se genera el primer chunk (bosque con árboles, hierro, piedra y tierra) en vez del bloque único.
+            Util.getChunkAtAsync(Objects.requireNonNull(island.getCenter()))
+                    .thenRun(() -> Bukkit.getScheduler().runTask(addon.getPlugin(), () -> {
+                        oneChunk.generate(island, is);
+                        handler.saveObjectAsync(is);
+                    }));
+            return;
+        }
+        // Set the bedrock to the initial block
+        Util.getChunkAtAsync(Objects.requireNonNull(island.getCenter()))
+        .thenRun(() -> island.getCenter().getBlock().setType(Material.GRASS_BLOCK));
         handler.saveObjectAsync(is);
         addon.getHoloListener().setUp(island, is, true);
     }

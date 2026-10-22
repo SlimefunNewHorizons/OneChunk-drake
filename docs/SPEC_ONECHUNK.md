@@ -80,3 +80,35 @@ la métrica de progreso que decide cuándo toca la siguiente fase/bioma.
 
 Paso 2 es independiente y seguro de hacer ya (no depende de los planos); pasos 1, 3 y 4 van juntos porque sin
 planos reales la colocación no tiene qué pegar.
+
+## ESTADO IMPLEMENTADO (2026-10-22, commit 9afeb84) — leer esto antes de tocar nada
+
+**Decisión de implementación:** en vez de planos `.blu` hechos a mano con WorldEdit, el contenido de cada bioma se **genera por
+código** (`onechunk/OneChunkGenerator`, `OneChunkBiome`): cantidades fijas (garantizadas), solo las posiciones salen de una
+semilla reproducible (`isla.uniqueId * 31 + nº de chunk`). Es probable que más adelante se quieran planos artesanales; el punto de
+sustitución es `OneChunkGenerator.generate(...)`.
+
+**Cómo funciona** (todo detrás de `world.onechunk.enabled`, apagado por defecto → el addon se comporta como AOneBlock):
+- Crear isla / reset → `BlockListener.setUp` genera el chunk 0 (bosque: 6 árboles, 10 hierros, 14 carbones, piedra, tierra,
+  bedrock de suelo) con `OneChunkManager.generate`, y 4 animales. Sin holograma ni bloque único.
+- Romper cualquier bloque del chunk (16x16, cualquier Y) → `OneChunkManager.onBlockBroken`. **No se regenera nada.** Cada 16
+  roturas se **escanea** el volumen (no se cuentan roturas: colocar/romper no adelanta el chunk); con ≥ `clear-fraction` (0.9)
+  minado → `advance`: nuevo chunk en la misma huella, jugadores dentro reubicados al centro libre, mensaje y sonido.
+- Cada `chunks-per-biome` (3) chunks cambia el bioma: FOREST → DESERT → SNOW → JUNGLE → CAVE → (vuelta). Menas más ricas con el
+  nº de chunk (redstone ≥2, oro/lapis ≥3, diamante ≥6). Mobs: 0 hostiles en el chunk 0; luego `2 + n` (tope `max-mobs`), el
+  tipo más fuerte del bioma se desbloquea cada 3 chunks.
+- Cubo de agua y minions desactivados en este modo; `NoBlockHandler` ya no repone el bloque central al reaparecer.
+- Progreso por isla persistido en `OneBlockIslands` (`chunksCleared`, `brokenInChunk`, `solidInChunk`).
+
+**Arreglado de paso:** `e75777b` dejó `Settings.oneChunkEnabled` sin setter → BentoBox no cargaba la config y el addon se
+deshabilitaba al arrancar (los 4 fallos de `AOneBlockTest`). Con setters: 590 pruebas verdes con JDK 25 (9 nuevas).
+
+**Lo que NO está hecho / hay que probar con un jugador real en STAGING (nunca directo en Dallas):**
+1. Que el jugador aparezca en un sitio seguro al crear la isla y al regenerar (hay pruebas del hueco, no del teleport real).
+2. Rendimiento al regenerar (≈10 mil `setType` en el hilo principal; si da tirones, repartir en ticks).
+3. Boss bar / `/ob count` muestran "bloques de fase" de OneBlock: en OneChunk no significan nada; falta adaptarlos.
+4. Los mundos nether/end de la modalidad siguen siendo los de OneBlock.
+5. `BlockProtect` aún protege el bloque central exacto de pistones/arena cayendo (inocuo, pero conviene quitarlo en este modo).
+6. Migración: en Dallas hay 4 islas de ChunkBlock (2 casi vacías). Plan: avisar a sus dueños y resetear `onechunk_world` con el
+   addon nuevo cuando esté probado; nada de esto se ha tocado.
+Compilar: `JAVA_HOME=/usr/lib/jvm/java-25-openjdk-amd64 mvn -Djava.version=25 package` (BentoBox 3.22 es bytecode 69; con JDK 21 no carga).

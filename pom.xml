@@ -57,6 +57,8 @@
         <mock-bukkit.version>4.110.0</mock-bukkit.version>
         <!-- More visible way how to change dependency versions -->
         <bentobox.version>3.22.0</bentobox.version>
+        <!-- api-version que declara addon.yml. Dallas (BentoBox 3.17, Java 21) se construye con -Dbentobox.version=3.17.0-SNAPSHOT -Dbentobox.apiversion=3.13.0 -->
+        <bentobox.apiversion>3.22.0</bentobox.apiversion>
         <items-adder.version>4.0.17</items-adder.version>
         <nexo.version>1.8.0</nexo.version>
         <craftengine.version>0.0.67</craftengine.version>

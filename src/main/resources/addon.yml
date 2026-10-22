@@ -1,7 +1,7 @@
 name: OneChunk
 main: world.bentobox.onechunk.OneChunk
 version: ${version}${build.number}
-api-version: 3.22.0
+api-version: ${bentobox.apiversion}
 metrics: true
 icon: "STONE"
 repository: "SlimefunNewHorizons/OneChunk-drake"

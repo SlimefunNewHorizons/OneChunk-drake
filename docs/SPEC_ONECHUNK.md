@@ -112,3 +112,10 @@ deshabilitaba al arrancar (los 4 fallos de `AOneBlockTest`). Con setters: 590 pr
 6. Migración: en Dallas hay 4 islas de ChunkBlock (2 casi vacías). Plan: avisar a sus dueños y resetear `onechunk_world` con el
    addon nuevo cuando esté probado; nada de esto se ha tocado.
 Compilar: `JAVA_HOME=/usr/lib/jvm/java-25-openjdk-amd64 mvn -Djava.version=25 package` (BentoBox 3.22 es bytecode 69; con JDK 21 no carga).
+
+## DESPLIEGUE (2026-10-22): dos builds, una sola fuente
+- **Staging Temporada 2** (Paper 26.2, Java 25, BentoBox 3.22.4): `JAVA_HOME=…java-25… mvn -Djava.version=25 clean package` → jar en `season2-staging/plugins/BentoBox/addons/OneChunk.jar`. Instalado y cargando sin errores de OneChunk.
+- **Dallas** (Purpur 1.21.11, Java 21, **BentoBox 3.17.0-SNAPSHOT-LOCAL**): `JAVA_HOME=…java-21… mvn -Dbentobox.version=3.17.0-SNAPSHOT -Dbentobox.apiversion=3.13.0 -Djava.version=21 -Dmaven.test.skip=true clean package`. (Las 3 pruebas de `BlockListenerTest` usan `Database#saveObjectNow`, que no existe en 3.17; la lógica la cubren las 598 pruebas del build 3.22.) Verificado contra el `BentoBox.jar` REAL de Dallas: las 42 clases de BentoBox que usa existen y todos sus métodos.
+- **Identidad propia** (no choca con OneBlock): addon `OneChunk`, comandos `/onechunk` `/oc` (admin `/oca`), mundo `onechunk_world`, tabla `OneChunkIslands`, banderas `ONECHUNK_*`. ¡El `config.yml` del jar se copia en el primer arranque y PISA `Settings`: debe llevar los comandos propios (hay prueba `DefaultConfigIdentityTest`)!
+- `ChunkBlock.jar` se desactivó **renombrándolo** (`ChunkBlock.jar.desactivado-onechunk-20261022`); su jar, config y las 4 islas (JSON) están respaldados en `gdrive:star-backups/drakescraft/jar-rollback/2026-10-22/`. Rollback: renombrar de vuelta y quitar `OneChunk.jar`.
+- Las islas de ChunkBlock se **adoptan**: su terreno pasa a ser el chunk actual (no se regenera ni se borra lo construido).

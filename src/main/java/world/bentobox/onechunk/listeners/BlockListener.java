@@ -195,7 +195,30 @@ public class BlockListener extends FlagListener implements Listener {
      * a queued block count and a rolled-back island. Writing directly removes the dependency.
      */
     public void saveCacheNow() {
-        cache.values().forEach(handler::saveObjectNow);
+        cache.values().forEach(this::saveNow);
+    }
+
+    /** Database#saveObjectNow solo existe desde BentoBox 3.2x; en versiones anteriores (Dallas: 3.17) saveObject ya escribe en el hilo actual. */
+    private static final java.lang.reflect.Method SAVE_NOW = findSaveNow();
+
+    private static java.lang.reflect.Method findSaveNow() {
+        try {
+            return Database.class.getMethod("saveObjectNow", Object.class);
+        } catch (NoSuchMethodException e) {
+            return null;
+        }
+    }
+
+    private void saveNow(OneBlockIslands is) {
+        if (SAVE_NOW != null) {
+            try {
+                SAVE_NOW.invoke(handler, is);
+                return;
+            } catch (ReflectiveOperationException e) {
+                addon.logError("saveObjectNow failed, falling back to saveObject: " + e.getMessage());
+            }
+        }
+        handler.saveObject(is);
     }
 
     // ---------------------------------------------------------------------

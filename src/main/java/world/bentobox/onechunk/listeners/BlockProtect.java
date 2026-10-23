@@ -55,6 +55,9 @@ public class BlockProtect implements Listener {
      */
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onBlockDamage(PlayerInteractEvent e) {
+        if (isOneChunkMode()) {
+            return;
+        }
         Action action = e.getAction();
         String clickType = addon.getSettings().getClickType();
 
@@ -106,6 +109,9 @@ public class BlockProtect implements Listener {
      */
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onBlockChange(final EntityChangeBlockEvent e) {
+        if (isOneChunkMode()) {
+            return;
+        }
         if (!addon.inWorld(e.getBlock().getWorld())) {
             return;
         }
@@ -120,6 +126,9 @@ public class BlockProtect implements Listener {
      */
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onExplosion(final EntityExplodeEvent e) {
+        if (isOneChunkMode()) {
+            return;
+        }
         if (!addon.inWorld(e.getLocation().getWorld())) {
             return;
         }
@@ -151,6 +160,9 @@ public class BlockProtect implements Listener {
      * @param blocks The list of blocks that would be moved.
      */
     private void checkPiston(Cancellable e, Block block, List<Block> blocks) {
+        if (isOneChunkMode()) {
+            return;
+        }
         if (!addon.inWorld(block.getWorld())) {
             return;
         }
@@ -167,6 +179,9 @@ public class BlockProtect implements Listener {
      */
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onFallingBlockSpawn(EntitySpawnEvent e) {
+        if (isOneChunkMode()) {
+            return;
+        }
         if (!e.getEntityType().equals(EntityType.FALLING_BLOCK) || !addon.inWorld(e.getEntity().getWorld())) {
             return;
         }
@@ -177,6 +192,14 @@ public class BlockProtect implements Listener {
                 && l.getBlockY() == i.getCenter().getBlockY()
                 && l.getBlockZ() == i.getCenter().getBlockZ()
                 ).ifPresent(i -> e.setCancelled(true));
+    }
+
+    /**
+     * The classic mode has one indestructible magic block. OneChunk intentionally
+     * has no such block: its whole generated volume is ordinary mineable terrain.
+     */
+    private boolean isOneChunkMode() {
+        return addon.getSettings() != null && addon.getSettings().isOneChunkEnabled();
     }
 
 

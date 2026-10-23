@@ -81,6 +81,7 @@ public class BlockProtectTest extends CommonTestSetup {
             
         // Settings
         Settings settings = new Settings();
+        settings.setOneChunkEnabled(false);
         when(addon.getSettings()).thenReturn(settings);
         // Class under test
         bp = new BlockProtect(addon);
@@ -344,6 +345,27 @@ public class BlockProtectTest extends CommonTestSetup {
         EntitySpawnEvent event = new EntitySpawnEvent(fallingBlock);
         bp.onFallingBlockSpawn(event);
         assertFalse(event.isCancelled());
+    }
+
+    @Test
+    void testOneChunkLeavesFormerCenterUnprotected() {
+        Settings settings = new Settings();
+        settings.setOneChunkEnabled(true);
+        when(addon.getSettings()).thenReturn(settings);
+
+        BlockData blockData = mock(BlockData.class);
+        EntityChangeBlockEvent change = new EntityChangeBlockEvent(mockPlayer, block, blockData);
+        bp.onBlockChange(change);
+        assertFalse(change.isCancelled());
+
+        List<Block> blocks = new ArrayList<>(List.of(block));
+        EntityExplodeEvent explosion = new EntityExplodeEvent(mockPlayer, location, blocks, 0, null);
+        bp.onExplosion(explosion);
+        assertTrue(blocks.contains(block));
+
+        BlockPistonExtendEvent piston = new BlockPistonExtendEvent(block, List.of(block), BlockFace.EAST);
+        bp.onPistonExtend(piston);
+        assertFalse(piston.isCancelled());
     }
 
 }

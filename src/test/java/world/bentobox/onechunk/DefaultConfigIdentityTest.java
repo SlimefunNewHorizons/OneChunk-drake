@@ -38,6 +38,18 @@ class DefaultConfigIdentityTest {
         assertEquals("OneChunk", CONFIG.getString("world.friendly-name"));
     }
 
+    /**
+     * BentoBox NO deja cambiar la distancia entre islas con islas ya creadas: si no coincide con el rango guardado,
+     * se deshabilita ENTERO (SkyBlock, OneBlock y OneChunk) con "Island distance mismatch". Pasó en Dallas el
+     * 2026-10-23 02:18: el jar traía 400 y las islas de ChunkBlock tenían 256 (BentoBox caído ~5 h).
+     * 256 es el valor de ChunkBlock, el addon al que sustituye OneChunk.
+     */
+    @Test
+    void islandDistanceMatchesTheIslandsAlreadyInProduction() {
+        assertEquals(256, CONFIG.getInt("world.distance-between-islands"));
+        assertEquals(256, new Settings().getIslandDistance());
+    }
+
     @Test
     void oneChunkIsOnByDefault() {
         assertEquals(true, CONFIG.getBoolean("world.onechunk.enabled"));

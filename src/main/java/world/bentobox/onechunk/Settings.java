@@ -214,7 +214,7 @@ public class Settings implements WorldSettings {
     @ConfigComment("It is the same for every dimension : Overworld, Nether and End.")
     @ConfigComment("This value cannot be changed mid-game and the plugin will not start if it is different.")
     @ConfigEntry(path = "world.distance-between-islands", needsReset = true)
-    private int islandDistance = 400;
+    private int islandDistance = 256;
 
     @ConfigComment("Default protection range radius in blocks. Cannot be larger than distance.")
     @ConfigComment("Admins can change protection sizes for players individually using /obadmin range set <player> <new range>")

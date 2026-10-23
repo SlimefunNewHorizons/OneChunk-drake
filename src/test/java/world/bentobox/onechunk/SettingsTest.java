@@ -72,7 +72,7 @@ public class SettingsTest extends CommonTestSetup {
      */
     @Test
     void testGetIslandDistance() {
-        assertEquals(400, s.getIslandDistance());
+        assertEquals(256, s.getIslandDistance());
     }
 
     /**

@@ -30,11 +30,13 @@ onechunk:
   bossbar:
     title: Bloques restantes
     status: '<green>Bloques de fase </green><aqua>[done] </aqua><light_purple>/ </light_purple><aqua>[total]</aqua>'
+    onechunk-status: '<gold>Chunk #[chunk]</gold> <dark_gray>|</dark_gray> <yellow>[biome]</yellow> <gray>(<green>[percent]</green>)</gray> <dark_gray>[</dark_gray><aqua>[broken]</aqua><gray>/</gray><aqua>[target]</aqua><dark_gray>]</dark_gray>'
     color: RED
     style: SEGMENTED_20
     not-active: '<red>Boss Bar no está activo para esta isla</red>'
   actionbar:
     status: "<green>Fase: </green><aqua>[phase-name] </aqua><light_purple>| </light_purple><green>Bloques: </green><aqua>[done] </aqua><light_purple>/ </light_purple><aqua>[total] </aqua><light_purple>| </light_purple><green>Progreso: </green><aqua>[percent-done]</aqua>"
+    onechunk-status: '<gold>Chunk #[chunk]</gold> <dark_gray>|</dark_gray> <yellow>[biome]</yellow> <dark_gray>[</dark_gray><green>[percent]</green><dark_gray>]</dark_gray>'
     not-active: "<red>La barra de acción no está activa para esta isla</red>"
   commands:
     admin:
@@ -64,8 +66,10 @@ onechunk:
     count:
       description: Muestra el número de bloques minados y la fase correspondiente
       info: '<green>Tienes </green><aqua>[number] bloques minados en la fase </aqua><green>[name]</green>'
+      onechunk-info: '<gold>Chunk actual: #[chunk]</gold> <dark_gray>|</dark_gray> <yellow>Bioma: [biome]</yellow> <dark_gray>|</dark_gray> <green>Minado: [percent]</green> <gray>([broken]/[target])</gray> <dark_gray>|</dark_gray> <aqua>Chunks completados: [total-cleared]</aqua>'
     info:
       count: '<green>Island está en el bloque </green><aqua>[number]</aqua><green> en la fase </green><aqua>[name] </aqua><green>. Recuento de vida </green><aqua>[lifetime] </aqua><green>.</green>'
+      onechunk-count: '<gold>OneChunk #[chunk]</gold> <dark_gray>|</dark_gray> <yellow>[biome]</yellow> <dark_gray>|</dark_gray> <green>[percent]</green> <dark_gray>(</dark_gray><gray>[broken]/[target]</gray><dark_gray>)</dark_gray> <dark_gray>|</dark_gray> <aqua>Total: [total-cleared]</aqua>'
     phases:
       description: Muestra una lista de todas las fases
       title: '<dark_green>Fases de OneBlock</dark_green>'

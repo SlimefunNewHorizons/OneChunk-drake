@@ -327,6 +327,8 @@ public class BlockListener extends FlagListener implements Listener {
                 if (is.getBrokenInChunk() % OneChunkManager.SCAN_EVERY == 0) {
                     handler.saveObjectAsync(is);
                 }
+                Bukkit.getPluginManager().callEvent(new MagicBlockEvent(i, e.getPlayer().getUniqueId(),
+                        e.getPlayer().getInventory().getItemInMainHand(), e.getBlock(), null));
             });
             return;
         }

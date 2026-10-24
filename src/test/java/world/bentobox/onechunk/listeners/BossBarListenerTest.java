@@ -224,4 +224,38 @@ public class BossBarListenerTest extends CommonTestSetup {
         verify(mockPlayer, never()).sendActionBar(any(Component.class));
         verify(bossBar, never()).addPlayer(any());
     }
+
+    /**
+     * Test that boss bar works and adapts to OneChunk progression (biome, chunks cleared, broken blocks).
+     */
+    @Test
+    void testOneChunkModeBossBar() {
+        settings.setOneChunkEnabled(true);
+        when(obi.getChunksCleared()).thenReturn(2);
+        when(obi.getSolidInChunk()).thenReturn(200);
+        when(obi.getBrokenInChunk()).thenReturn(50);
+        when(island.isAllowed(addon.ONECHUNK_BOSSBAR)).thenReturn(true);
+
+        fireMagicBlockEvent();
+
+        verify(bossBar).addPlayer(mockPlayer);
+        verify(bossBar).setProgress(org.mockito.ArgumentMatchers.doubleThat(d -> d > 0.0 && d <= 1.0));
+        verify(bossBar).setTitle(org.mockito.ArgumentMatchers.contains("Chunk #3"));
+    }
+
+    /**
+     * Test that action bar works and adapts to OneChunk progression.
+     */
+    @Test
+    void testOneChunkModeActionBar() {
+        settings.setOneChunkEnabled(true);
+        when(obi.getChunksCleared()).thenReturn(0);
+        when(obi.getSolidInChunk()).thenReturn(100);
+        when(obi.getBrokenInChunk()).thenReturn(30);
+        when(island.isAllowed(addon.ONECHUNK_ACTIONBAR)).thenReturn(true);
+
+        fireMagicBlockEvent();
+
+        verify(mockPlayer).sendActionBar(any(Component.class));
+    }
 }

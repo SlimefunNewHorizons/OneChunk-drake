@@ -116,16 +116,41 @@ public class BossBarListener implements Listener {
         OneBlockIslands obi = addon.getOneBlocksIsland(island);
 
         // --- Create the Action Bar Component ---
-        int numBlocksToGo = addon.getOneBlockManager().getNextPhaseBlocks(obi);
-        int phaseBlocks = addon.getOneBlockManager().getPhaseBlocks(obi);
-        int done = phaseBlocks - numBlocksToGo;
-        String translation = user.getTranslation("onechunk.actionbar.status", "[togo]",
-                String.valueOf(numBlocksToGo), "[total]", String.valueOf(phaseBlocks), "[done]", String.valueOf(done),
-                "[phase-name]", obi.getPhaseName(), "[percent-done]",
-                Math.round(addon.getOneBlockManager().getPercentageDone(obi)) + "%");
+        String translation;
+        if (addon.getSettings() != null && addon.getSettings().isOneChunkEnabled()) {
+            int chunkIndex = obi.getChunksCleared() + 1;
+            int per = addon.getSettings().getOneChunkChunksPerBiome();
+            world.bentobox.onechunk.mining.OneChunkBiome biome = world.bentobox.onechunk.mining.OneChunkBiome.forChunk(obi.getChunksCleared(), per);
+            int solid = Math.max(1, obi.getSolidInChunk());
+            int broken = obi.getBrokenInChunk();
+            double clearFraction = addon.getSettings().getOneChunkClearFraction();
+            int targetBlocks = (int) Math.ceil(solid * clearFraction);
+            int percent = (int) Math.min(100, Math.round(((double) broken / targetBlocks) * 100));
+
+            translation = user.getTranslationOrNothing("onechunk.actionbar.onechunk-status",
+                    "[chunk]", String.valueOf(chunkIndex),
+                    "[biome]", biome.displayName(),
+                    "[broken]", String.valueOf(broken),
+                    "[target]", String.valueOf(targetBlocks),
+                    "[percent]", percent + "%");
+            if (translation.isEmpty()) {
+                translation = "<gold>Chunk #" + chunkIndex + "</gold> <dark_gray>|</dark_gray> <yellow>" + biome.displayName()
+                        + "</yellow> <dark_gray>[</dark_gray><green>" + percent + "%</green><dark_gray>]</dark_gray>";
+            }
+        } else {
+            int numBlocksToGo = addon.getOneBlockManager().getNextPhaseBlocks(obi);
+            int phaseBlocks = addon.getOneBlockManager().getPhaseBlocks(obi);
+            int done = phaseBlocks - numBlocksToGo;
+            translation = user.getTranslation("onechunk.actionbar.status", "[togo]",
+                    String.valueOf(numBlocksToGo), "[total]", String.valueOf(phaseBlocks), "[done]", String.valueOf(done),
+                    "[phase-name]", obi.getPhaseName(), "[percent-done]",
+                    Math.round(addon.getOneBlockManager().getPercentageDone(obi)) + "%");
+        }
         // Send
         Component comp = bukkitToAdventure(translation);
-        player.sendActionBar(comp);
+        if (player != null) {
+            player.sendActionBar(comp);
+        }
     }
     /**
      * Try to show the bossbar to the player
@@ -180,16 +205,41 @@ public class BossBarListener implements Listener {
         @NonNull
         OneBlockIslands obi = addon.getOneBlocksIsland(island);
 
-        // Set progress
-        bar.setProgress(addon.getOneBlockManager().getPercentageDone(obi) / 100);
-        int numBlocksToGo = addon.getOneBlockManager().getNextPhaseBlocks(obi);
-        int phaseBlocks = addon.getOneBlockManager().getPhaseBlocks(obi);
-        int done = phaseBlocks - numBlocksToGo;
-        String translation = user.getTranslationOrNothing("onechunk.bossbar.status", "[togo]",
-                String.valueOf(numBlocksToGo), "[total]", String.valueOf(phaseBlocks), "[done]", String.valueOf(done),
-                "[phase-name]", obi.getPhaseName(), "[percent-done]",
-                Math.round(addon.getOneBlockManager().getPercentageDone(obi)) + "%");
-        bar.setTitle(translation);
+        if (addon.getSettings() != null && addon.getSettings().isOneChunkEnabled()) {
+            int chunkIndex = obi.getChunksCleared() + 1;
+            int per = addon.getSettings().getOneChunkChunksPerBiome();
+            world.bentobox.onechunk.mining.OneChunkBiome biome = world.bentobox.onechunk.mining.OneChunkBiome.forChunk(obi.getChunksCleared(), per);
+            int solid = Math.max(1, obi.getSolidInChunk());
+            int broken = obi.getBrokenInChunk();
+            double clearFraction = addon.getSettings().getOneChunkClearFraction();
+            int targetBlocks = (int) Math.ceil(solid * clearFraction);
+            double progress = Math.min(1.0, Math.max(0.0, (double) broken / targetBlocks));
+            bar.setProgress(progress);
+            int percent = (int) Math.min(100, Math.round(((double) broken / targetBlocks) * 100));
+
+            String translation = user.getTranslationOrNothing("onechunk.bossbar.onechunk-status",
+                    "[chunk]", String.valueOf(chunkIndex),
+                    "[biome]", biome.displayName(),
+                    "[broken]", String.valueOf(broken),
+                    "[target]", String.valueOf(targetBlocks),
+                    "[percent]", percent + "%");
+            if (translation.isEmpty()) {
+                translation = "<gold>Chunk #" + chunkIndex + "</gold> <dark_gray>|</dark_gray> <yellow>" + biome.displayName()
+                        + "</yellow> <dark_gray>(</dark_gray><green>" + percent + "%</green><dark_gray>)</dark_gray>";
+            }
+            bar.setTitle(translation);
+        } else {
+            // Set progress
+            bar.setProgress(addon.getOneBlockManager().getPercentageDone(obi) / 100);
+            int numBlocksToGo = addon.getOneBlockManager().getNextPhaseBlocks(obi);
+            int phaseBlocks = addon.getOneBlockManager().getPhaseBlocks(obi);
+            int done = phaseBlocks - numBlocksToGo;
+            String translation = user.getTranslationOrNothing("onechunk.bossbar.status", "[togo]",
+                    String.valueOf(numBlocksToGo), "[total]", String.valueOf(phaseBlocks), "[done]", String.valueOf(done),
+                    "[phase-name]", obi.getPhaseName(), "[percent-done]",
+                    Math.round(addon.getOneBlockManager().getPercentageDone(obi)) + "%");
+            bar.setTitle(translation);
+        }
         // Add to user if they don't have it already
         Player player = Bukkit.getPlayer(uuid);
         if (!bar.getPlayers().contains(player)) {

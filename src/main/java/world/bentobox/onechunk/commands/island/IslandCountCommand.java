@@ -45,7 +45,32 @@ public class IslandCountCommand extends CompositeCommand {
     public boolean execute(User user, String label, List<String> args) {
         getIslands().getProtectedIslandAt(Objects.requireNonNull(user.getLocation())).ifPresent(island -> {
             OneBlockIslands i = addon.getOneBlocksIsland(island);
-            user.sendMessage("onechunk.commands.count.info", TextVariables.NUMBER, String.valueOf(i.getBlockNumber()), TextVariables.NAME, i.getPhaseName());
+            if (addon.getSettings() != null && addon.getSettings().isOneChunkEnabled()) {
+                int chunkIndex = i.getChunksCleared() + 1;
+                int per = addon.getSettings().getOneChunkChunksPerBiome();
+                world.bentobox.onechunk.mining.OneChunkBiome biome = world.bentobox.onechunk.mining.OneChunkBiome.forChunk(i.getChunksCleared(), per);
+                int solid = Math.max(1, i.getSolidInChunk());
+                int broken = i.getBrokenInChunk();
+                double clearFraction = addon.getSettings().getOneChunkClearFraction();
+                int targetBlocks = (int) Math.ceil(solid * clearFraction);
+                int percent = (int) Math.min(100, Math.round(((double) broken / targetBlocks) * 100));
+
+                String msg = user.getTranslationOrNothing("onechunk.commands.count.onechunk-info",
+                        "[chunk]", String.valueOf(chunkIndex),
+                        "[biome]", biome.displayName(),
+                        "[broken]", String.valueOf(broken),
+                        "[target]", String.valueOf(targetBlocks),
+                        "[total-cleared]", String.valueOf(i.getChunksCleared()),
+                        "[lifetime]", String.valueOf(i.getLifetime()),
+                        "[percent]", percent + "%");
+                if (msg.isEmpty()) {
+                    user.sendMessage("onechunk.commands.count.info", TextVariables.NUMBER, String.valueOf(chunkIndex), TextVariables.NAME, biome.displayName());
+                } else {
+                    user.sendMessage(msg);
+                }
+            } else {
+                user.sendMessage("onechunk.commands.count.info", TextVariables.NUMBER, String.valueOf(i.getBlockNumber()), TextVariables.NAME, i.getPhaseName());
+            }
         });
         return true;
     }

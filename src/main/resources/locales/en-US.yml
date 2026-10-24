@@ -37,6 +37,7 @@ onechunk:
     # status: "&a Phase blocks &b [total]. Blocks left: [todo]"
     # status: "&a [phase-name] : [percent-done]"
     status: "<green>Phase blocks </green><aqua>[done] </aqua><light_purple>/ </light_purple><aqua>[total]</aqua>"
+    onechunk-status: "<gold>Chunk #[chunk]</gold> <dark_gray>|</dark_gray> <yellow>[biome]</yellow> <gray>(<green>[percent]</green>)</gray> <dark_gray>[</dark_gray><aqua>[broken]</aqua><gray>/</gray><aqua>[target]</aqua><dark_gray>]</dark_gray>"
     # RED, WHITE, PINK, BLUE, GREEN, YELLOW, or PURPLE
     color: RED
     # SOLID, SEGMENTED_6,  SEGMENTED_10, SEGMENTED_12, SEGMENTED_20
@@ -44,6 +45,7 @@ onechunk:
     not-active: "<red>Boss Bar is not active for this island</red>"
   actionbar:
     status: "<green>Phase: </green><aqua>[phase-name] </aqua><light_purple>| </light_purple><green>Blocks: </green><aqua>[done] </aqua><light_purple>/ </light_purple><aqua>[total] </aqua><light_purple>| </light_purple><green>Progression: </green><aqua>[percent-done]</aqua>"
+    onechunk-status: "<gold>Chunk #[chunk]</gold> <dark_gray>|</dark_gray> <yellow>[biome]</yellow> <dark_gray>[</dark_gray><green>[percent]</green><dark_gray>]</dark_gray>"
     not-active: "<red>Action Bar is not active for this island</red>"
   commands:
     admin:
@@ -99,8 +101,10 @@ onechunk:
     count:
       description: show the block count and phase
       info: "<green>You are on block </green><aqua>[number] in the </aqua><green>[name] phase</green>"
+      onechunk-info: "<gold>Chunk #[chunk]</gold> <dark_gray>|</dark_gray> <yellow>Biome: [biome]</yellow> <dark_gray>|</dark_gray> <green>Mined: [percent]</green> <gray>([broken]/[target])</gray> <dark_gray>|</dark_gray> <aqua>Cleared chunks: [total-cleared]</aqua>"
     info:
       count: "<green>Island is on block </green><aqua>[number] </aqua><green>in the </green><aqua>[name] </aqua><green>phase. Lifetime count </green><aqua>[lifetime] </aqua><green>.</green>"
+      onechunk-count: "<gold>OneChunk #[chunk]</gold> <dark_gray>|</dark_gray> <yellow>[biome]</yellow> <dark_gray>|</dark_gray> <green>[percent]</green> <dark_gray>(</dark_gray><gray>[broken]/[target]</gray><dark_gray>)</dark_gray> <dark_gray>|</dark_gray> <aqua>Total: [total-cleared]</aqua>"
     phases:
       description: show a list of all the phases
       title: "<dark_green>OneBlock Phases</dark_green>"

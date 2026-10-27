@@ -117,4 +117,52 @@ public class InfoListenerTest extends CommonTestSetup {
         verify(lm, never()).get(any(User.class), eq("onechunk.commands.info.count"));
     }
 
+    /**
+     * Test that in legacy mode when blockNumber is 0, nothing is sent.
+     */
+    @Test
+    void testOnInfoZeroBlockLegacy() {
+        when(is.getBlockNumber()).thenReturn(0);
+        IslandInfoEvent e = new IslandInfoEvent(island, ID, false, location, addon);
+        il.onInfo(e);
+        verify(lm, never()).get(any(User.class), eq("onechunk.commands.info.count"));
+    }
+
+    /**
+     * Test that in OneChunk mode, info reports chunk progress and biome.
+     */
+    @Test
+    void testOnInfoOneChunkMode() {
+        world.bentobox.onechunk.Settings settings = new world.bentobox.onechunk.Settings();
+        settings.setOneChunkEnabled(true);
+        when(addon.getSettings()).thenReturn(settings);
+        when(is.getChunksCleared()).thenReturn(3);
+        when(is.getSolidInChunk()).thenReturn(250);
+        when(is.getBrokenInChunk()).thenReturn(100);
+        when(is.getLifetime()).thenReturn(1500L);
+
+        IslandInfoEvent e = new IslandInfoEvent(island, ID, false, location, addon);
+        il.onInfo(e);
+        verify(lm).get(any(User.class), eq("onechunk.commands.info.onechunk-count"));
+    }
+
+    /**
+     * Test fallback to count translation when onechunk-count is empty.
+     */
+    @Test
+    void testOnInfoOneChunkModeFallbackWhenEmptyTranslation() {
+        world.bentobox.onechunk.Settings settings = new world.bentobox.onechunk.Settings();
+        settings.setOneChunkEnabled(true);
+        when(addon.getSettings()).thenReturn(settings);
+        when(is.getChunksCleared()).thenReturn(0);
+        when(is.getSolidInChunk()).thenReturn(100);
+        when(is.getBrokenInChunk()).thenReturn(10);
+        when(is.getLifetime()).thenReturn(50L);
+        when(lm.get(any(User.class), eq("onechunk.commands.info.onechunk-count"))).thenReturn("");
+
+        IslandInfoEvent e = new IslandInfoEvent(island, ID, false, location, addon);
+        il.onInfo(e);
+        verify(lm).get(any(User.class), eq("onechunk.commands.info.count"));
+    }
+
 }

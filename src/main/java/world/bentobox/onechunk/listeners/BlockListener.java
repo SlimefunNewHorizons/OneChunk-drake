@@ -1173,4 +1173,23 @@ public class BlockListener extends FlagListener implements Listener {
         }
         return CompletableFuture.completedFuture(true);
     }
+
+    /**
+     * Warns players when placing storage blocks/containers inside the 16x16 regenerating
+     * mining chunk, recommending they build around the chunk on their island to avoid losing things.
+     */
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onBlockPlaceInMiningChunk(final org.bukkit.event.block.BlockPlaceEvent e) {
+        if (!isOneChunkEnabled() || !addon.inWorld(e.getBlock().getWorld())) {
+            return;
+        }
+        Location l = e.getBlock().getLocation();
+        addon.getIslands().getIslandAt(l).filter(i -> isProgressBlock(i, l)).ifPresent(i -> {
+            Block b = e.getBlock();
+            if (b.getState() instanceof org.bukkit.block.Container || b.getType().name().endsWith("_BED")) {
+                e.getPlayer().sendMessage("§6OneChunk §7» §e⚠ ¡Atención! Estás dentro de la columna de minería (16x16). "
+                        + "§bConstruye tus cofres, camas y máquinas alrededor del chunk en tu isla para que no se reinicien al regenerar el terreno.");
+            }
+        });
+    }
 }

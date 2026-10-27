@@ -59,12 +59,13 @@ public final class OneChunkGenerator {
         int floor = floorY(surfaceY, depth);
         Random rnd = new Random(seed);
 
-        clear(world, ox, oz, floor, topY(surfaceY));
+        Location spawn = new Location(world, centerX + 0.5, surfaceY + 1, centerZ + 0.5);
+
+        clear(world, ox, oz, floor, topY(surfaceY), spawn);
         layers(world, ox, oz, floor, surfaceY, biome);
         int[] counts = ores(world, ox, oz, floor, surfaceY, biome, index, rnd);
         int trees = decorate(world, ox, oz, surfaceY, biome, centerX, centerZ, rnd);
         int solid = countSolid(world, ox, oz, floor, topY(surfaceY));
-        Location spawn = new Location(world, centerX + 0.5, surfaceY + 1, centerZ + 0.5);
         return new Result(solid, spawn, trees, counts[0], counts[1]);
     }
 
@@ -89,11 +90,24 @@ public final class OneChunkGenerator {
         return !m.isAir() && m != Material.BEDROCK && m != Material.WATER && m != Material.LAVA;
     }
 
-    private static void clear(World world, int ox, int oz, int floor, int top) {
+    public static void clear(World world, int ox, int oz, int floor, int top) {
+        clear(world, ox, oz, floor, top, new Location(world, ox + 8.5, top + 1, oz + 8.5));
+    }
+
+    public static void clear(World world, int ox, int oz, int floor, int top, Location spawn) {
         for (int x = ox; x < ox + 16; x++) {
             for (int z = oz; z < oz + 16; z++) {
                 for (int y = floor; y <= top; y++) {
-                    world.getBlockAt(x, y, z).setType(Material.AIR, false);
+                    Block b = world.getBlockAt(x, y, z);
+                    if (b.getState() instanceof org.bukkit.block.Container container) {
+                        for (org.bukkit.inventory.ItemStack item : container.getInventory().getContents()) {
+                            if (item != null && !item.getType().isAir()) {
+                                world.dropItemNaturally(spawn, item);
+                            }
+                        }
+                        container.getInventory().clear();
+                    }
+                    b.setType(Material.AIR, false);
                 }
             }
         }

@@ -102,6 +102,27 @@ class OneChunkGeneratorTest {
     }
 
     @Test
+    void regeneratingPreservesContainerItemsAtSpawn() {
+        OneChunkGenerator.generate(world, CX, CZ, SURFACE, DEPTH, OneChunkBiome.FOREST, 0, 1L);
+        org.bukkit.block.Block block = world.getBlockAt(CX + 2, SURFACE, CZ + 2);
+        block.setType(Material.CHEST);
+        if (block.getState() instanceof org.bukkit.block.Chest chest) {
+            chest.getInventory().addItem(new org.bukkit.inventory.ItemStack(Material.DIAMOND, 5));
+        }
+
+        OneChunkGenerator.generate(world, CX, CZ, SURFACE, DEPTH, OneChunkBiome.DESERT, 1, 2L);
+        boolean droppedDiamondFound = false;
+        for (org.bukkit.entity.Entity e : world.getEntities()) {
+            if (e instanceof org.bukkit.entity.Item item && item.getItemStack().getType() == Material.DIAMOND) {
+                assertEquals(5, item.getItemStack().getAmount());
+                droppedDiamondFound = true;
+                break;
+            }
+        }
+        assertTrue(droppedDiamondFound, "Los diamantes del cofre deben preservarse y dropearse en spawn");
+    }
+
+    @Test
     void biomesHaveTheirSignatureContent() {
         OneChunkGenerator.generate(world, CX, CZ, SURFACE, DEPTH, OneChunkBiome.SNOW, 6, 3L);
         assertEquals(256, count(Material.SNOW_BLOCK));

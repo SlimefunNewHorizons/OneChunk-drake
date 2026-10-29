@@ -6,6 +6,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.World;
+import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Item;
@@ -37,6 +38,13 @@ public class OneChunkManager {
         this.addon = addon;
     }
 
+    /** Profundidad efectiva: 0 en config = hasta el fondo del mundo (columna completa); nunca por debajo de minHeight. */
+    private int depth(World world, int surfaceY) {
+        int d = addon.getSettings().getOneChunkDepth();
+        int max = surfaceY - world.getMinHeight();
+        return d <= 0 ? max : Math.min(d, max);
+    }
+
     /** ¿Está activo el modo OneChunk? */
     public boolean enabled() {
         return addon.getSettings() != null && addon.getSettings().isOneChunkEnabled();
@@ -49,7 +57,7 @@ public class OneChunkManager {
             return;
         }
         int per = addon.getSettings().getOneChunkChunksPerBiome();
-        int depth = addon.getSettings().getOneChunkDepth();
+        int depth = depth(c.getWorld(), c.getBlockY());
         int index = is.getChunksCleared();
         OneChunkBiome biome = OneChunkBiome.forChunk(index, per);
         long seed = island.getUniqueId().hashCode() * 31L + index;
@@ -109,7 +117,7 @@ public class OneChunkManager {
         if (is.getBrokenInChunk() % SCAN_EVERY != 0) {
             return false;
         }
-        int depth = addon.getSettings().getOneChunkDepth();
+        int depth = depth(c.getWorld(), c.getBlockY());
         int floor = OneChunkGenerator.floorY(c.getBlockY(), depth);
         int ox = (c.getBlockX() >> 4) << 4;
         int oz = (c.getBlockZ() >> 4) << 4;

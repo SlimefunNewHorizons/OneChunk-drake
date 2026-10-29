@@ -269,9 +269,9 @@ public class Settings implements WorldSettings {
     private int oneChunkChunksPerBiome = 3;
 
     @ConfigComment("OneChunk: depth in blocks of every generated chunk (surface at the island height, bedrock floor below).")
-    @ConfigComment("Min 8, max 64.")
+    @ConfigComment("0 = automatic: down to the world's min build height (full column, e.g. -64 in 26.x). Otherwise 8-384.")
     @ConfigEntry(path = "world.onechunk.depth")
-    private int oneChunkDepth = 12;
+    private int oneChunkDepth = 0;
 
     @ConfigComment("OneChunk: fraction (0.5-1.0) of the generated blocks that must be mined before the next chunk appears.")
     @ConfigEntry(path = "world.onechunk.clear-fraction")
@@ -804,7 +804,7 @@ public class Settings implements WorldSettings {
     }
 
     public int getOneChunkDepth() {
-        return Math.min(64, Math.max(8, oneChunkDepth));
+        return oneChunkDepth <= 0 ? 0 : Math.min(384, Math.max(8, oneChunkDepth));
     }
 
     public double getOneChunkClearFraction() {

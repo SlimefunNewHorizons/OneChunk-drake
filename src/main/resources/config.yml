@@ -62,8 +62,8 @@ world:
     # next one appears; every 'chunks-per-biome' chunks the biome rotates (forest, desert, snow, jungle, caves)
     # and the hostile mobs that spawn with each new chunk get more numerous and dangerous.
     chunks-per-biome: 3
-    # Depth in blocks of every generated chunk (surface at the island height, bedrock floor below). Min 8, max 64.
-    depth: 12
+    # Depth in blocks of every generated chunk (surface at the island height, bedrock floor below). 0 = automatic: down to the world min build height (full column). Otherwise 8-384.
+    depth: 0
     # Fraction (0.5-1.0) of the generated blocks that must be mined before the next chunk appears.
     clear-fraction: 0.9
     # Maximum hostile mobs spawned with each new chunk.

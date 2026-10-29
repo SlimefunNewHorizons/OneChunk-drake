@@ -281,16 +281,14 @@ public class OneChunk extends GameModeAddon {
             if (getServer().getWorld(worldName + NETHER) == null) {
                 log("Creating OneChunk's Nether...");
             }
-            netherWorld = settings.isNetherIslands() ? getWorld(worldName, World.Environment.NETHER, chunkGenerator)
-                    : getWorld(worldName, World.Environment.NETHER, null);
+            netherWorld = getWorld(worldName, World.Environment.NETHER, chunkGenerator);
         }
         // Make the end if it does not exist
         if (settings.isEndGenerate()) {
             if (getServer().getWorld(worldName + THE_END) == null) {
                 log("Creating OneChunk's End World...");
             }
-            endWorld = settings.isEndIslands() ? getWorld(worldName, World.Environment.THE_END, chunkGenerator)
-                    : getWorld(worldName, World.Environment.THE_END, null);
+            endWorld = getWorld(worldName, World.Environment.THE_END, chunkGenerator);
         }
     }
 
@@ -312,6 +310,12 @@ public class OneChunk extends GameModeAddon {
         World w = settings.isUseOwnGenerator() ? wc.createWorld() : wc.generator(chunkGenerator2).createWorld();
         // Set spawn rates
         if (w != null) {
+            if (env != World.Environment.NORMAL) {
+                // Nether/End de OneChunk: un solo chunk 16x16
+                w.getWorldBorder().setCenter(8, 8);
+                w.getWorldBorder().setSize(16);
+                w.setSpawnLocation(8, ChunkGeneratorWorld.PLATFORM_Y + 1, 8);
+            }
             setSpawnRates(w);
         }
         return w;

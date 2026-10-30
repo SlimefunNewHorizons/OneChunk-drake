@@ -84,4 +84,4 @@ dist/
 nbdist/
 nbactions.xml
 nb-configuration.xml
-.nb-gradle/
+.nb-gradle/graphify-out/

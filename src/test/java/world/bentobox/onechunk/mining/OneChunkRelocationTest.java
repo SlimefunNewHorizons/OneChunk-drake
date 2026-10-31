@@ -103,4 +103,26 @@ class OneChunkRelocationTest {
         assertEquals(200, far.getLocation().getBlockX());
         assertFalse(other.isDead(), "un mob de otra isla no se toca");
     }
+
+    @Test
+    void initialChunkCreationWelcomesPlayer() {
+        OneChunkGenerator.Result r = OneChunkGenerator.generate(world, CX, CZ, SURFACE, DEPTH, OneChunkBiome.FOREST, 0, 1L);
+        PlayerMock player = server.addPlayer();
+        player.teleport(new Location(world, 35.5, FLOOR + 2, 44.5));
+        OneChunkManager.relocateEntities(world, 32, 32, FLOOR, OneChunkGenerator.topY(SURFACE), r.spawn(), 0);
+        assertEquals(SURFACE + 1, player.getLocation().getBlockY());
+        String msg = player.nextMessage();
+        assertTrue(msg != null && msg.contains("Bienvenido a tu chunk"), "debe dar la bienvenida en el chunk 0");
+    }
+
+    @Test
+    void phaseRegenerationNotifiesSurfaceRelocation() {
+        OneChunkGenerator.Result r = OneChunkGenerator.generate(world, CX, CZ, SURFACE, DEPTH, OneChunkBiome.DESERT, 3, 2L);
+        PlayerMock player = server.addPlayer();
+        player.teleport(new Location(world, 35.5, FLOOR + 2, 44.5));
+        OneChunkManager.relocateEntities(world, 32, 32, FLOOR, OneChunkGenerator.topY(SURFACE), r.spawn(), 3);
+        assertEquals(SURFACE + 1, player.getLocation().getBlockY());
+        String msg = player.nextMessage();
+        assertTrue(msg != null && msg.contains("El chunk se regeneró"), "debe avisar que se regeneró en chunks subsecuentes");
+    }
 }

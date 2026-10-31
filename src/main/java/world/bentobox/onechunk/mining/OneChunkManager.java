@@ -19,6 +19,7 @@ import org.bukkit.util.Vector;
 import world.bentobox.onechunk.OneChunk;
 import world.bentobox.onechunk.dataobjects.OneBlockIslands;
 import world.bentobox.bentobox.database.objects.Island;
+import world.bentobox.bentobox.managers.IslandsManager;
 
 /**
  * Lógica de juego de OneChunk: el jugador MINA un chunk con recursos garantizados; al agotarlo aparece otro, y cada
@@ -66,10 +67,15 @@ public class OneChunkManager {
         is.setSolidInChunk(r.solidBlocks());
         is.setBrokenInChunk(0);
         int floor = OneChunkGenerator.floorY(c.getBlockY(), depth);
+        // Sincronizar spawn point oficial de BentoBox a la superficie segura generada
+        if (r.spawn() != null && r.spawn().getWorld() != null) {
+            island.setSpawnPoint(r.spawn().getWorld().getEnvironment(), r.spawn());
+            IslandsManager.saveIsland(island);
+        }
         // Primero poner a salvo lo que había dentro (el terreno nuevo ya está generado encima) y SOLO DESPUÉS sembrar los
         // mobs nuevos: al revés, la reubicación los eliminaría.
         relocateEntities(c.getWorld(), (c.getBlockX() >> 4) << 4, (c.getBlockZ() >> 4) << 4, floor,
-                OneChunkGenerator.topY(c.getBlockY()), r.spawn());
+                OneChunkGenerator.topY(c.getBlockY()), r.spawn(), index);
         spawnMobs(c.getWorld(), c, biome, index, new Random(seed ^ 0x5DEECE66DL));
     }
 
@@ -84,6 +90,16 @@ public class OneChunkManager {
      * @return número de jugadores trasladados
      */
     public static int relocateEntities(World world, int ox, int oz, int floor, int top, Location spawn) {
+        return relocateEntities(world, ox, oz, floor, top, spawn, 1);
+    }
+
+    /**
+     * Pone a salvo todo lo que estaba dentro del volumen discriminando según sea creación inicial (chunkIndex == 0)
+     * o regeneración de fase (chunkIndex > 0).
+     *
+     * @return número de jugadores trasladados
+     */
+    public static int relocateEntities(World world, int ox, int oz, int floor, int top, Location spawn, int chunkIndex) {
         int moved = 0;
         // Caja del volumen (más 40 bloques por encima: jugadores volando o cayendo sobre el chunk)
         for (Entity e : world.getNearbyEntities(BoundingBox.of(new Vector(ox, floor, oz), new Vector(ox + 16, top + 40, oz + 16)))) {
@@ -91,7 +107,11 @@ public class OneChunkManager {
                 p.teleport(spawn);
                 p.setFallDistance(0f);
                 p.setVelocity(new Vector(0, 0, 0));
-                p.sendMessage("§6OneChunk §7» §eEl chunk se regeneró: te llevamos a la superficie.");
+                if (chunkIndex == 0) {
+                    p.sendMessage("§6OneChunk §7» §a¡Bienvenido a tu chunk! Te ubicamos en la superficie segura.");
+                } else {
+                    p.sendMessage("§6OneChunk §7» §eEl chunk se regeneró: te llevamos a la superficie.");
+                }
                 moved++;
             } else if (e instanceof Item || (e instanceof Tameable t && t.isTamed())) {
                 e.teleport(spawn);

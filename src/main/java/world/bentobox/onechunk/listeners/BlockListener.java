@@ -392,6 +392,11 @@ public class BlockListener extends FlagListener implements Listener {
             return;
         }
 
+        if (isOneChunkEnabled()) {
+            // In OneChunk, mining happens across the full chunk volume; items drop naturally where mined.
+            return;
+        }
+
         // Find an island at the spawn location.
         Optional<Island> optionalIsland = this.addon.getIslands().getIslandAt(spawnLocation)
                 // Chained to the Optional: Filter the island.

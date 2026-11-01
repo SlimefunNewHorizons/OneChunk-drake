@@ -1059,6 +1059,25 @@ class BlockListenerTest2 extends CommonTestSetup {
         verify(world).dropItem(dropLoc, itemStack);
     }
 
+    /**
+     * Test method for
+     * {@link world.bentobox.onechunk.listeners.BlockListener#onItemSpawn(ItemSpawnEvent)}
+     * In OneChunk mode → event is not cancelled, drop-on-top is bypassed.
+     */
+    @Test
+    void testOnItemSpawnOneChunkEnabled() {
+        when(addonSettings.isOneChunkEnabled()).thenReturn(true);
+
+        Item item = mock(Item.class);
+        ItemSpawnEvent e = mock(ItemSpawnEvent.class);
+        when(e.getLocation()).thenReturn(location);
+        when(e.getEntity()).thenReturn(item);
+
+        bl.onItemSpawn(e);
+
+        verify(e, never()).setCancelled(true);
+    }
+
     // =========================================================================
     // onBlockBreak / onBlockBreakByMinion guard-clause tests
     // =========================================================================

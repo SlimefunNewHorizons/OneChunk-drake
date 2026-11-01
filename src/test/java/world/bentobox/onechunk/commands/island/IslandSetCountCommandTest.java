@@ -123,6 +123,7 @@ public class IslandSetCountCommandTest extends CommonTestSetup {
 
         // Settings
         Settings settings = new Settings();
+        settings.setOneChunkEnabled(false);
         when(addon.getSettings()).thenReturn(settings);
 
         // BlockListener
@@ -221,7 +222,17 @@ public class IslandSetCountCommandTest extends CommonTestSetup {
         verify(user).sendMessage("onechunk.commands.island.setcount.set", TextVariables.NUMBER, "2000");
         assertEquals(2000, oneBlockIsland.getBlockNumber());
         assertTrue(oneBlockIsland.getQueue().isEmpty());
+    }
 
+    @Test
+    void testExecuteOneChunkModeDisabledForPlayers() {
+        when(island.getRankCommand(anyString())).thenReturn(RanksManager.MEMBER_RANK);
+        Settings s = new Settings();
+        s.setOneChunkEnabled(true);
+        when(addon.getSettings()).thenReturn(s);
+
+        assertFalse(iscc.execute(user, "", List.of("2000")));
+        verify(user).sendMessage("onechunk.commands.island.setcount.onechunk-disabled");
     }
 
 }

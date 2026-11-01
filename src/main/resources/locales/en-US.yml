@@ -50,10 +50,12 @@ onechunk:
   commands:
     admin:
       setcount:
-        parameters: "<name> <count> [lifetime]"
+        parameters: "<name> <count> [lifetime|chunks]"
         description: "set player's block count"
         set: "<green>[name]'s count set to [number]</green>"
         set-lifetime: "<green>[name]'s lifetime count set to [number]</green>"
+        set-chunks: "<green>[name]'s cleared chunks set to [number] and terrain regenerated.</green>"
+        onechunk-required: "<red>Setting chunks is only available when OneChunk mode is enabled.</red>"
       setchest:
         parameters: "<phase> <rarity>"
         description: "put the looked-at chest in a phase with the rarity specified"
@@ -124,6 +126,7 @@ onechunk:
         description: "set block count to previously completed value"
         set: "<green>Count set to [number].</green>"
         too-high: "<red>The maximum you can set is [number]!</red>"
+        onechunk-disabled: "<gold>OneChunk</gold> <dark_gray>»</dark_gray> <red>In OneChunk mode, progression is measured in cleared chunks. Check your progress with <yellow>/oc info</yellow>.</red>"
     respawn-block:
       description: "respawns magic block in situations when it disappears"
       block-exist: "<green>Block exists, did not require respawning. I marked it for you.</green>"

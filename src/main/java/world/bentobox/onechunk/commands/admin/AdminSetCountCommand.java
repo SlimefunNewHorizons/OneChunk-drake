@@ -10,6 +10,7 @@ import world.bentobox.bentobox.api.commands.CompositeCommand;
 import world.bentobox.bentobox.api.localization.TextVariables;
 import world.bentobox.bentobox.api.user.User;
 import world.bentobox.bentobox.database.objects.Island;
+import world.bentobox.bentobox.managers.IslandsManager;
 import world.bentobox.bentobox.util.Util;
 
 public class AdminSetCountCommand extends CompositeCommand {
@@ -31,7 +32,7 @@ public class AdminSetCountCommand extends CompositeCommand {
 
     @Override
     public boolean execute(User user, String label, List<String> args) {
-        if (args.size() < 2 || args.size() > 3 || (args.size() == 3 && !args.get(2).equalsIgnoreCase("lifetime"))) {
+        if (args.size() < 2 || args.size() > 3 || (args.size() == 3 && !args.get(2).equalsIgnoreCase("lifetime") && !args.get(2).equalsIgnoreCase("chunks"))) {
             showHelp(this, user);
             return false;
         }
@@ -58,6 +59,19 @@ public class AdminSetCountCommand extends CompositeCommand {
         if (args.size() == 3 && args.get(2).equalsIgnoreCase("lifetime")) {
             i.setLifetime(count);
             user.sendMessage("onechunk.commands.admin.setcount.set-lifetime", TextVariables.NUMBER, String.valueOf(count), TextVariables.NAME, getPlayers().getName(targetUUID));
+        } else if (args.size() == 3 && args.get(2).equalsIgnoreCase("chunks")) {
+            if (addon.getSettings() != null && addon.getSettings().isOneChunkEnabled()) {
+                i.setChunksCleared(count);
+                if (addon.getOneChunkManager() != null) {
+                    addon.getOneChunkManager().generate(island, i);
+                }
+                if (addon.getBlockListener() != null) {
+                    addon.getBlockListener().saveIsland(island);
+                }
+                user.sendMessage("onechunk.commands.admin.setcount.set-chunks", TextVariables.NUMBER, String.valueOf(count), TextVariables.NAME, getPlayers().getName(targetUUID));
+            } else {
+                user.sendMessage("onechunk.commands.admin.setcount.onechunk-required");
+            }
         } else {
             i.setBlockNumber(count);
             i.clearQueue();
@@ -69,6 +83,15 @@ public class AdminSetCountCommand extends CompositeCommand {
     @Override
     public Optional<List<String>> tabComplete(User user, String alias, List<String> args) {
         // Return the player names
-        return args.size() == 2 ? Optional.of(Util.getOnlinePlayerList(user)) : Optional.empty();
+        if (args.size() == 2) {
+            return Optional.of(Util.getOnlinePlayerList(user));
+        }
+        if (args.size() == 3) {
+            if (addon.getSettings() != null && addon.getSettings().isOneChunkEnabled()) {
+                return Optional.of(List.of("lifetime", "chunks"));
+            }
+            return Optional.of(List.of("lifetime"));
+        }
+        return Optional.empty();
     }
 }

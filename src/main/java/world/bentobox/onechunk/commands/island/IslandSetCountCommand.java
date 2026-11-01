@@ -65,6 +65,10 @@ public class IslandSetCountCommand extends CompositeCommand {
                     user.getTranslation(RanksManager.getInstance().getRank(rank)));
             return false;
         }
+        if (addon.getSettings() != null && addon.getSettings().isOneChunkEnabled()) {
+            user.sendMessage("onechunk.commands.island.setcount.onechunk-disabled");
+            return false;
+        }
         // Get value
         // Get new range
         if (!Util.isInteger(args.getFirst(), true) || Integer.parseInt(args.getFirst()) < 0) {

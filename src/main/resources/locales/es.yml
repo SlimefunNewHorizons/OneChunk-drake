@@ -41,10 +41,12 @@ onechunk:
   commands:
     admin:
       setcount:
-        parameters: <name> <count> [lifetime]
+        parameters: <name> <count> [lifetime|chunks]
         description: Establece el número de bloques minados al jugador
         set: '<green>El número de bloques minados de [name] se ha establecido en [number]</green>'
         set-lifetime: '<green>El numero de bloques totales de [name] se ha establecido en [number]</green>'
+        set-chunks: '<green>Los chunks completados de [name] se han establecido en [number] y el terreno fue regenerado.</green>'
+        onechunk-required: '<red>Fijar chunks solo está disponible cuando el modo OneChunk está habilitado.</red>'
       setchest:
         parameters: <phase> <rarity>
         description: >-
@@ -89,6 +91,7 @@ onechunk:
         description: Establece la cantidad de bloques a un valor previamente completado
         set: '<green>Cantidad establecida en [number].</green>'
         too-high: '<red>¡Lo máximo que puedes establecer es [number]!</red>'
+        onechunk-disabled: '<gold>OneChunk</gold> <dark_gray>»</dark_gray> <red>En modo OneChunk el progreso se mide por chunks completados. Consulta tu avance con <yellow>/oc info</yellow>.</red>'
     respawn-block:
       description: reaparece el bloque mágico en situaciones en las que desaparece
       block-exist: '<green>Block existe, no requirió reaparición. Te lo marqué.</green>'

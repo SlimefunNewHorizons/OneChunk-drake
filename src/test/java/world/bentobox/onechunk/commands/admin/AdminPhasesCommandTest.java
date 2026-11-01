@@ -89,8 +89,23 @@ class AdminPhasesCommandTest extends CommonTestSetup {
      */
     @Test
     void testCanExecuteWithIndex() {
+        world.bentobox.onechunk.Settings settings = new world.bentobox.onechunk.Settings();
+        settings.setOneChunkEnabled(false);
+        when(addon.getSettings()).thenReturn(settings);
         when(oneBlocksManager.getPhaseIndex()).thenReturn(List.of(new PhaseIndexEntry()));
         assertTrue(cmd.canExecute(user, "phases", List.of()));
+    }
+
+    /**
+     * Test canExecute in OneChunk mode sends onechunk-disabled message.
+     */
+    @Test
+    void testCanExecuteOneChunkDisabled() {
+        world.bentobox.onechunk.Settings settings = new world.bentobox.onechunk.Settings();
+        settings.setOneChunkEnabled(true);
+        when(addon.getSettings()).thenReturn(settings);
+        assertFalse(cmd.canExecute(user, "phases", List.of()));
+        verify(user).sendMessage("onechunk.commands.admin.phases.onechunk-disabled");
     }
 
     /**

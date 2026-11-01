@@ -66,13 +66,16 @@ onechunk:
         only-single-chest: "<red>Only single chests can be set</red>"
         success: "<green>Chest successfully added to phase</green>"
         failure: "<red>Chest could not be added to the phase! See console for errors</red>"
+        onechunk-disabled: "<red>In OneChunk mode, chest generation is handled procedurally per chunk and cannot be bound to legacy phases.</red>"
       sanity:
         parameters: "<phase>"
         description: "display a sanity check of the phase probabilities in the console"
         see-console: "<green>See the console for the report</green>"
+        onechunk-disabled: "<red>In OneChunk mode, block generation is procedural (OneChunkGenerator) and does not use phase probability tables.</red>"
       phases:
         description: "open the phase order editor"
         no-index: "<red>No phase index is loaded, so phases cannot be reordered</red>"
+        onechunk-disabled: "<red>In OneChunk mode, phases are replaced by procedural biome cycles and cannot be reordered.</red>"
         saved: "<green>Phase order saved and applied</green>"
         save-failed: "<red>Could not save the phase order! See console for errors</red>"
         gui:
@@ -112,6 +115,8 @@ onechunk:
       title: "<dark_green>OneBlock Phases</dark_green>"
       name-syntax: "<green>[name]</green>"
       description-syntax: "<aqua>[number] blocks</aqua>"
+      onechunk-cycle: "<gold>OneChunk Biome Cycle</gold> <gray>(every [per] chunks):</gray> [cycle]\n<gold>Current Island:</gold> <green>Chunk #[chunk]</green> <gray>([biome])</gray>"
+      onechunk-cycle-generic: "<gold>OneChunk Biome Cycle</gold> <gray>(every [per] chunks):</gray> [cycle]"
     island:
       bossbar:
         description: "toggles phase boss bar"

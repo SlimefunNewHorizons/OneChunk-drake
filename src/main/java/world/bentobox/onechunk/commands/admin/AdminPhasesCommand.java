@@ -35,6 +35,10 @@ public class AdminPhasesCommand extends CompositeCommand {
             showHelp(this, user);
             return false;
         }
+        if (addon.getSettings() != null && addon.getSettings().isOneChunkEnabled()) {
+            user.sendMessage("onechunk.commands.admin.phases.onechunk-disabled");
+            return false;
+        }
         if (addon.getOneBlockManager().getPhaseIndex().isEmpty()) {
             // Phases were loaded without an index, so there is nothing to reorder
             user.sendMessage("onechunk.commands.admin.phases.no-index");

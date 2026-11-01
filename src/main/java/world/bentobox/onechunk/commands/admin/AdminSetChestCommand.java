@@ -42,6 +42,10 @@ public class AdminSetChestCommand extends CompositeCommand {
 
     @Override
     public boolean canExecute(User user, String label, List<String> args) {
+        if (addon.getSettings() != null && addon.getSettings().isOneChunkEnabled()) {
+            user.sendMessage("onechunk.commands.admin.setchest.onechunk-disabled");
+            return false;
+        }
         // Command is setchest phase rarity
         if (args.size() != 2) {
             showHelp(this, user);

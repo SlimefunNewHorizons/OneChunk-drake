@@ -87,7 +87,22 @@ class AdminSanityCheckTest extends CommonTestSetup {
      */
     @Test
     void testCanExecuteNoArgs() {
+        world.bentobox.onechunk.Settings settings = new world.bentobox.onechunk.Settings();
+        settings.setOneChunkEnabled(false);
+        when(addon.getSettings()).thenReturn(settings);
         assertTrue(cmd.canExecute(user, "sanity", List.of()));
+    }
+
+    /**
+     * Test canExecute in OneChunk mode sends onechunk-disabled message.
+     */
+    @Test
+    void testCanExecuteOneChunkDisabled() {
+        world.bentobox.onechunk.Settings settings = new world.bentobox.onechunk.Settings();
+        settings.setOneChunkEnabled(true);
+        when(addon.getSettings()).thenReturn(settings);
+        assertFalse(cmd.canExecute(user, "sanity", List.of()));
+        verify(user).sendMessage("onechunk.commands.admin.sanity.onechunk-disabled");
     }
 
     /**

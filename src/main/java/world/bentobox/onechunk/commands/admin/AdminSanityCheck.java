@@ -33,6 +33,10 @@ public class AdminSanityCheck extends CompositeCommand {
 
     @Override
     public boolean canExecute(User user, String label, List<String> args) {
+        if (addon.getSettings() != null && addon.getSettings().isOneChunkEnabled()) {
+            user.sendMessage("onechunk.commands.admin.sanity.onechunk-disabled");
+            return false;
+        }
         // No args
         if (args.size() > 1) {
             showHelp(this, user);

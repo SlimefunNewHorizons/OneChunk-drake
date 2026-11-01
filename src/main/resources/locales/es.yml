@@ -59,12 +59,18 @@ onechunk:
         only-single-chest: '<red>Solo se pueden configurar cofres individuales</red>'
         success: '<green>El cofre ha sido agregado con éxito a la fase</green>'
         failure: '<red>¡No se pudo agregar el cofre a la fase! Revisa la consola para más detalles</red>'
+        onechunk-disabled: '<red>En modo OneChunk la generación de cofres se maneja procedimentalmente por chunk y no se vincula a fases clásicas.</red>'
       sanity:
         parameters: <phase>
         description: >-
           Muestra una comprobación de las probabilidades de la fase en la
           consola
         see-console: '<green>Revisa la consola para ver el informe</green>'
+        onechunk-disabled: '<red>En modo OneChunk la generación de bloques es procedimental (OneChunkGenerator) y no utiliza tablas de probabilidad de fases.</red>'
+      phases:
+        description: "Abre el editor del orden de fases"
+        no-index: "<red>No hay un índice de fases cargado, por lo que no se pueden reordenar</red>"
+        onechunk-disabled: '<red>En modo OneChunk las fases se reemplazan por ciclos de biomas procedimentales y no se pueden reordenar.</red>'
     count:
       description: Muestra el número de bloques minados y la fase correspondiente
       info: '<green>Tienes </green><aqua>[number] bloques minados en la fase </aqua><green>[name]</green>'
@@ -77,6 +83,8 @@ onechunk:
       title: '<dark_green>Fases de OneBlock</dark_green>'
       name-syntax: '<green>[name]</green>'
       description-syntax: '<aqua>[number] bloques</aqua>'
+      onechunk-cycle: '<gold>Ciclo de biomas OneChunk</gold> <gray>(cada [per] chunks):</gray> [cycle]\n<gold>Isla actual:</gold> <green>Chunk #[chunk]</green> <gray>([biome])</gray>'
+      onechunk-cycle-generic: '<gold>Ciclo de biomas OneChunk</gold> <gray>(cada [per] chunks):</gray> [cycle]'
     island:
       bossbar:
         description: Barra de jefe de fase de alojamiento

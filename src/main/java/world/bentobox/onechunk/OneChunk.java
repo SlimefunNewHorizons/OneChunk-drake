@@ -28,6 +28,7 @@ import world.bentobox.onechunk.listeners.JoinLeaveListener;
 import world.bentobox.onechunk.listeners.NexoListener;
 import world.bentobox.onechunk.listeners.NoBlockHandler;
 import world.bentobox.onechunk.listeners.StartSafetyListener;
+import world.bentobox.onechunk.mining.OneChunkManager;
 import world.bentobox.onechunk.oneblocks.OneBlockCustomBlockCreator;
 import world.bentobox.onechunk.oneblocks.OneBlocksManager;
 import world.bentobox.onechunk.oneblocks.customblock.CraftEngineCustomBlock;
@@ -420,6 +421,13 @@ public class OneChunk extends GameModeAddon {
      */
     public HoloListener getHoloListener() {
         return holoListener;
+    }
+
+    /**
+     * @return the oneChunk manager
+     */
+    public OneChunkManager getOneChunkManager() {
+        return blockListener != null ? blockListener.getOneChunkManager() : null;
     }
 
     /**

@@ -123,6 +123,21 @@ public class OneChunkManager {
     }
 
     /**
+     * Calcula la cantidad de bloques sólidos minables que quedan actualmente en el volumen del chunk de la isla.
+     */
+    public int getRemainingSolid(Island island) {
+        Location c = island.getCenter();
+        if (c == null || c.getWorld() == null) {
+            return 0;
+        }
+        int depth = depth(c.getWorld(), c.getBlockY());
+        int floor = OneChunkGenerator.floorY(c.getBlockY(), depth);
+        int ox = (c.getBlockX() >> 4) << 4;
+        int oz = (c.getBlockZ() >> 4) << 4;
+        return OneChunkGenerator.countSolid(c.getWorld(), ox, oz, floor, OneChunkGenerator.topY(c.getBlockY()));
+    }
+
+    /**
      * Se llama tras romper un bloque dentro del chunk de la isla. No coloca nada en el hueco: el bloque roto se queda
      * roto (se mina A TRAVÉS del chunk).
      *
@@ -137,11 +152,7 @@ public class OneChunkManager {
         if (is.getBrokenInChunk() % SCAN_EVERY != 0) {
             return false;
         }
-        int depth = depth(c.getWorld(), c.getBlockY());
-        int floor = OneChunkGenerator.floorY(c.getBlockY(), depth);
-        int ox = (c.getBlockX() >> 4) << 4;
-        int oz = (c.getBlockZ() >> 4) << 4;
-        int remaining = OneChunkGenerator.countSolid(c.getWorld(), ox, oz, floor, OneChunkGenerator.topY(c.getBlockY()));
+        int remaining = getRemainingSolid(island);
         if (is.getSolidInChunk() <= 0) {
             // Isla anterior a OneChunk (o sin datos): se ADOPTA el terreno que ya tiene como chunk actual en vez de darlo
             // por agotado, que lo regeneraría y borraría lo que el jugador construyó.

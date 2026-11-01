@@ -1166,6 +1166,13 @@ public class BlockListener extends FlagListener implements Listener {
     }
 
     /**
+     * @return the oneChunk manager
+     */
+    public OneChunkManager getOneChunkManager() {
+        return oneChunk;
+    }
+
+    /**
      * Saves the island progress to the database async
      *
      * @param island - island

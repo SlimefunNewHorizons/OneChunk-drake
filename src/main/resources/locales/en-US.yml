@@ -128,6 +128,8 @@ onechunk:
       description: "respawns magic block in situations when it disappears"
       block-exist: "<green>Block exists, did not require respawning. I marked it for you.</green>"
       block-respawned: "<green>Block respawned.</green>"
+      onechunk-disabled: "<yellow>In OneChunk mode you mine the entire chunk volume. There is no single magic block to respawn!</yellow>"
+      onechunk-recovered: "<green>No solid blocks were left in your chunk! A fresh chunk has been generated safely.</green>"
   phase:
     insufficient-level: "<red>Your island level is too low to proceed! It must be [number].</red>"
     insufficient-funds: "<red>Your funds are too low to proceed! They must be [number].</red>"

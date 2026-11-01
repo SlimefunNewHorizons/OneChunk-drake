@@ -87,7 +87,7 @@ public final class OneChunkGenerator {
 
     /** ¿Cuenta este material como bloque del chunk que el jugador debe minar? */
     public static boolean isMinable(Material m) {
-        return !m.isAir() && m != Material.BEDROCK && m != Material.WATER && m != Material.LAVA;
+        return m != null && !m.isAir() && m != Material.BEDROCK && m != Material.WATER && m != Material.LAVA;
     }
 
     public static void clear(World world, int ox, int oz, int floor, int top) {

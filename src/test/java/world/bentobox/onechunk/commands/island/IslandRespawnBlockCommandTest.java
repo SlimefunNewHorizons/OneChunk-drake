@@ -28,6 +28,8 @@ import org.mockito.Mock;
 import world.bentobox.onechunk.OneChunk;
 import world.bentobox.onechunk.CommonTestSetup;
 import world.bentobox.onechunk.Settings;
+import world.bentobox.onechunk.listeners.BlockListener;
+import world.bentobox.onechunk.mining.OneChunkManager;
 import world.bentobox.bentobox.api.commands.CompositeCommand;
 import world.bentobox.bentobox.api.user.User;
 import world.bentobox.bentobox.util.Util;
@@ -67,6 +69,7 @@ class IslandRespawnBlockCommandTest extends CommonTestSetup {
         when(location.add(any(Vector.class))).thenReturn(location);
 
         Settings settings = new Settings();
+        settings.setOneChunkEnabled(false);
         when(addon.getSettings()).thenReturn(settings);
         rbc = new IslandRespawnBlockCommand(ac, settings.getRespawnBlockCommand().split(" ")[0],
                 settings.getRespawnBlockCommand().split(" "));
@@ -154,6 +157,36 @@ class IslandRespawnBlockCommandTest extends CommonTestSetup {
        rbc.execute(user, "", List.of());
        verify(user).sendMessage("onechunk.commands.respawn-block.block-exist");
        verify(world, times(18)).spawnParticle(eq(Particle.DUST), eq(location), eq(5), eq(0.1), eq(0.0d), eq(0.1), eq(1.0d), any());
+    }
+
+    @Test
+    void testExecuteOneChunkModeWithRemainingBlocks() {
+        Settings settings = new Settings();
+        settings.setOneChunkEnabled(true);
+        when(addon.getSettings()).thenReturn(settings);
+        OneChunkManager ocm = org.mockito.Mockito.mock(OneChunkManager.class);
+        when(addon.getOneChunkManager()).thenReturn(ocm);
+        when(ocm.getRemainingSolid(island)).thenReturn(150);
+
+        rbc.execute(user, "", List.of());
+        verify(user).sendMessage("onechunk.commands.respawn-block.onechunk-disabled");
+    }
+
+    @Test
+    void testExecuteOneChunkModeDepleted() {
+        Settings settings = new Settings();
+        settings.setOneChunkEnabled(true);
+        when(addon.getSettings()).thenReturn(settings);
+        OneChunkManager ocm = org.mockito.Mockito.mock(OneChunkManager.class);
+        when(addon.getOneChunkManager()).thenReturn(ocm);
+        when(ocm.getRemainingSolid(island)).thenReturn(0);
+        BlockListener bl = org.mockito.Mockito.mock(BlockListener.class);
+        when(addon.getBlockListener()).thenReturn(bl);
+
+        rbc.execute(user, "", List.of());
+        verify(ocm).generate(eq(island), any());
+        verify(bl).saveIsland(island);
+        verify(user).sendMessage("onechunk.commands.respawn-block.onechunk-recovered");
     }
 
 }

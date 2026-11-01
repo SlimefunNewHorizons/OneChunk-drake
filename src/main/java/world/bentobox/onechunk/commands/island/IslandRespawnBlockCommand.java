@@ -9,7 +9,10 @@ import org.bukkit.Particle;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.util.Vector;
 
+import world.bentobox.onechunk.OneChunk;
+import world.bentobox.onechunk.dataobjects.OneBlockIslands;
 import world.bentobox.onechunk.listeners.BlockProtect;
+import world.bentobox.onechunk.mining.OneChunkManager;
 import world.bentobox.bentobox.api.commands.CompositeCommand;
 import world.bentobox.bentobox.api.user.User;
 import world.bentobox.bentobox.database.objects.Island;
@@ -18,6 +21,7 @@ import world.bentobox.bentobox.util.Util;
 
 /**
  * This command checks if center block is AIR or BEDROCK and in such situation it triggers BlockBreakEvent.
+ * In OneChunk mode, the whole chunk volume is minable; if all solid blocks are depleted, it regenerates the chunk safely.
  */
 public class IslandRespawnBlockCommand extends CompositeCommand
 {
@@ -69,6 +73,25 @@ public class IslandRespawnBlockCommand extends CompositeCommand
     {
         Island island = this.getIslands().getIsland(this.getWorld(), user);
         Objects.requireNonNull(island);
+
+        OneChunk addon = getAddon();
+        if (addon != null && addon.getSettings() != null && addon.getSettings().isOneChunkEnabled()) {
+            OneChunkManager manager = addon.getOneChunkManager();
+            int remaining = manager != null ? manager.getRemainingSolid(island) : 1;
+            if (remaining <= 0) {
+                OneBlockIslands obi = addon.getBlockListener() != null ? addon.getBlockListener().getIsland(island) : addon.getOneBlocksIsland(island);
+                if (manager != null) {
+                    manager.generate(island, obi);
+                }
+                if (addon.getBlockListener() != null) {
+                    addon.getBlockListener().saveIsland(island);
+                }
+                user.sendMessage("onechunk.commands.respawn-block.onechunk-recovered");
+                return true;
+            }
+            user.sendMessage("onechunk.commands.respawn-block.onechunk-disabled");
+            return true;
+        }
         
         if (island.getCenter().getBlock().getType() == Material.BEDROCK ||
                 island.getCenter().getBlock().getType() == Material.AIR)

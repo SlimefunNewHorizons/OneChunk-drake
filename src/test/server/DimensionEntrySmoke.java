@@ -31,7 +31,7 @@ public final class DimensionEntrySmoke extends JavaPlugin {
             Class<?> type = addon.getClass().getClassLoader().loadClass(
                     "world.bentobox.onechunk.listeners.DimensionEntryListener");
             Object listener = type.getConstructor(addon.getClass()).newInstance(addon);
-            require(java.util.Arrays.stream(HandlerList.getRegisteredListeners(bentobox))
+            require(HandlerList.getRegisteredListeners(bentobox).stream()
                     .anyMatch(registration -> registration.getListener().getClass() == type), "registered listener");
             Player player = (Player) Proxy.newProxyInstance(Player.class.getClassLoader(),
                     new Class<?>[] { Player.class }, (proxy, method, args) ->

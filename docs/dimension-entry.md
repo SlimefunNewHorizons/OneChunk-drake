@@ -43,6 +43,12 @@ not establish actual Java/Bedrock movement, inventories or portal round trips.
 It prints `ONECHUNK_DIMENSION_SMOKE PASS` or `FAIL`, saves and shuts down the
 test server. **Never install the probe on an existing server.**
 
+Measured on 2026-11-05: the resource-limited JDK 25 build passed 31 focused
+tests without failures, errors or skipped tests. The disposable Purpur
+26.2-138 server with BentoBox 3.22.4 loaded the addon and passed all 10 probe
+checks. Both real generated dimension platforms were present and the server
+saved and stopped cleanly. These results do not certify client portal travel.
+
 ## Rollout and rollback
 
 Install only through the normal backup/SHA-256 deployment workflow. Enable the

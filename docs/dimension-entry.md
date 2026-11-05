@@ -49,6 +49,15 @@ tests without failures, errors or skipped tests. The disposable Purpur
 checks. Both real generated dimension platforms were present and the server
 saved and stopped cleanly. These results do not certify client portal travel.
 
+The probe schedules shutdown two ticks after `save-all flush`. Requesting both
+in one callback can trigger Purpur's shutdown watchdog branch, which checks
+`!isRunning && !hasStopped` against a one-second-old tick even with a 60-second
+normal timeout. That branch was confirmed in the actual runtime bytecode after
+an additional successful probe emitted a shutdown dump. The watchdog remains enabled.
+The final repeat with the delayed shutdown passed all 10 checks, saved all six
+worlds and exited with status 0 without an ERROR or watchdog dump (2026-11-05,
+12:24 CLT, UTC-4). This repeat used the same game addon jar.
+
 ## Rollout and rollback
 
 Install only through the normal backup/SHA-256 deployment workflow. Enable the

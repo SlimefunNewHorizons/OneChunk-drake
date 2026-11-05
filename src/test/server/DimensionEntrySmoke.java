@@ -62,7 +62,9 @@ public final class DimensionEntrySmoke extends JavaPlugin {
             getLogger().log(java.util.logging.Level.SEVERE, "ONECHUNK_DIMENSION_SMOKE FAIL", failure);
         } finally {
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "save-all flush");
-            Bukkit.shutdown();
+            // Let the completed save tick advance lastTick before requesting shutdown.
+            // WatchdogThread diagnoses !running && !hasStopped after only one second.
+            Bukkit.getScheduler().runTaskLater(this, Bukkit::shutdown, 2L);
         }
     }
 

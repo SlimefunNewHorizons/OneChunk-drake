@@ -259,6 +259,11 @@ public class Settings implements WorldSettings {
     @ConfigEntry(path = "world.use-own-generator")
     private boolean useOwnGenerator;
 
+    @ConfigComment("Keep arrivals inside the shared Nether/End chunk; cancel if no safe floor is loaded.")
+    @ConfigComment("Only applies to the built-in generator. False preserves previous behavior.")
+    @ConfigEntry(path = "world.onechunk.safe-dimension-entry")
+    private boolean safeDimensionEntry = false;
+
     @ConfigComment("Use the island-center chunk as the progress area instead of one magic block.")
     @ConfigComment("Enabled by default: this addon IS OneChunk. Set to false only to get the classic single magic block.")
     @ConfigEntry(path = "world.onechunk.enabled")
@@ -770,6 +775,14 @@ public class Settings implements WorldSettings {
     @Override
     public boolean isUseOwnGenerator() {
         return useOwnGenerator;
+    }
+
+    public boolean isSafeDimensionEntry() {
+        return safeDimensionEntry;
+    }
+
+    public void setSafeDimensionEntry(boolean safeDimensionEntry) {
+        this.safeDimensionEntry = safeDimensionEntry;
     }
 
     /**

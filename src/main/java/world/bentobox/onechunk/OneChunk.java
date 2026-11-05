@@ -28,6 +28,7 @@ import world.bentobox.onechunk.listeners.JoinLeaveListener;
 import world.bentobox.onechunk.listeners.NexoListener;
 import world.bentobox.onechunk.listeners.NoBlockHandler;
 import world.bentobox.onechunk.listeners.StartSafetyListener;
+import world.bentobox.onechunk.listeners.DimensionEntryListener;
 import world.bentobox.onechunk.mining.OneChunkManager;
 import world.bentobox.onechunk.oneblocks.OneBlockCustomBlockCreator;
 import world.bentobox.onechunk.oneblocks.OneBlocksManager;
@@ -200,6 +201,7 @@ public class OneChunk extends GameModeAddon {
         registerListener(new BlockProtect(this));
         registerListener(new JoinLeaveListener(this));
         registerListener(new InfoListener(this));
+        registerListener(new DimensionEntryListener(this));
         // Note: bossBar is registered as a listener by the FlagsManager when the
         // ONECHUNK_BOSSBAR or ONECHUNK_ACTIONBAR flag is registered in onLoad, so it
         // must not be registered here too or events would be handled twice

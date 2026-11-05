@@ -1,4 +1,9 @@
 # AOneBlock
+> This repository develops the OneChunk fork on `port-26x` (Java 25).
+> The inherited AOneBlock documentation below does not describe every OneChunk mechanic.
+> The opt-in Nether/End entry guard and its validation limits are documented in
+> [Dimension entry](docs/dimension-entry.md). Compilation alone does not establish client compatibility.
+
 A OneBlock Minecraft plugin, written by tastybento. 
 Credit for the original idea: IJAminecraft.
 
@@ -367,4 +372,3 @@ You can add all the usual addons to OneBlock, like Challeges, Likes, Level, Warp
 Bugs and Feature requests
 =========================
 File bug and feature requests here: https://github.com/BentoBoxWorld/OneBlock/issues
-

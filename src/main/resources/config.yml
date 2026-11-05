@@ -54,6 +54,9 @@ world:
   # It acts like a prefix for nether and end (e.g. onechunk_world, onechunk_world_nether, onechunk_world_end)
   world-name: onechunk_world
   onechunk:
+    # Keep Nether/End arrivals in the shared origin chunk. Cancel if its floor is unavailable.
+    # Enable after testing with the built-in generator; false preserves previous behavior.
+    safe-dimension-entry: false
     # Progression applies to every block in the 16x16 chunk containing the island center.
     # Enabled by default: this addon IS OneChunk. Set to false only to get the classic single magic block.
     enabled: true

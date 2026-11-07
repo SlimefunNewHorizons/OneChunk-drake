@@ -259,10 +259,10 @@ public class Settings implements WorldSettings {
     @ConfigEntry(path = "world.use-own-generator")
     private boolean useOwnGenerator;
 
-    @ConfigComment("Keep arrivals inside the shared Nether/End chunk; cancel if no safe floor is loaded.")
-    @ConfigComment("Only applies to the built-in generator. False preserves previous behavior.")
+    @ConfigComment("Ensure Nether/End arrivals land on a generated safe column and return portals route to the island.")
+    @ConfigComment("Enabled by default; set to false only as an emergency bypass.")
     @ConfigEntry(path = "world.onechunk.safe-dimension-entry")
-    private boolean safeDimensionEntry = false;
+    private boolean safeDimensionEntry = true;
 
     @ConfigComment("Use the island-center chunk as the progress area instead of one magic block.")
     @ConfigComment("Enabled by default: this addon IS OneChunk. Set to false only to get the classic single magic block.")
@@ -328,10 +328,9 @@ public class Settings implements WorldSettings {
     @ConfigEntry(path = "world.nether.generate")
     private boolean netherGenerate = true;
 
-    @ConfigComment("Islands in Nether. Change to false for standard vanilla nether.")
-    @ConfigComment("Note that there is currently no magic block in the Nether")
+    @ConfigComment("Islands in Nether. Enabled so each player mines their own 16x16 Nether OneChunk column.")
     @ConfigEntry(path = "world.nether.islands", needsReset = true)
-    private boolean netherIslands = false;
+    private boolean netherIslands = true;
 
     @ConfigComment("Make the nether roof, if false, there is nothing up there")
     @ConfigComment("Change to false if lag is a problem from the generation")
@@ -339,12 +338,9 @@ public class Settings implements WorldSettings {
     @ConfigEntry(path = "world.nether.roof")
     private boolean netherRoof = false;
 
-    @ConfigComment("Nether spawn protection radius - this is the distance around the nether spawn")
-    @ConfigComment("that will be protected from player interaction (breaking blocks, pouring lava etc.)")
-    @ConfigComment("Minimum is 0 (not recommended), maximum is 100. Default is 25.")
-    @ConfigComment("Only applies to vanilla nether")
+    @ConfigComment("Nether spawn protection radius - 0 in OneChunk so origin chunk blocks are not locked.")
     @ConfigEntry(path = "world.nether.spawn-radius")
-    private int netherSpawnRadius = 32;
+    private int netherSpawnRadius = 0;
 
     @ConfigComment("This option indicates if nether portals should be linked via dimensions.")
     @ConfigComment("Option will simulate vanilla portal mechanics that links portals together")
@@ -354,15 +350,13 @@ public class Settings implements WorldSettings {
     private boolean makeNetherPortals = false;
 
     // End
-    @ConfigComment("End Nether - if this is false, the end world will not be made and access to")
-    @ConfigComment("the end will not occur. Other plugins may still enable portal usage.")
+    @ConfigComment("Generate The End - enabled by default in OneChunk.")
     @ConfigEntry(path = "world.end.generate")
-    private boolean endGenerate = false;
+    private boolean endGenerate = true;
 
-    @ConfigComment("Islands in The End. Change to false for standard vanilla end.")
-    @ConfigComment("Note that there is currently no magic block in the End")
+    @ConfigComment("Islands in The End. Enabled so each player mines their own 16x16 End OneChunk column.")
     @ConfigEntry(path = "world.end.islands", needsReset = true)
-    private boolean endIslands = false;
+    private boolean endIslands = true;
 
     @ConfigComment("This option indicates if obsidian platform in the end should be generated")
     @ConfigComment("when player enters the end world.")

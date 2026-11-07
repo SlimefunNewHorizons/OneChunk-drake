@@ -298,7 +298,7 @@ public class BlockListener extends FlagListener implements Listener {
      */
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onBlockBreakDeny(final BlockBreakEvent e) {
-        if (!addon.inWorld(e.getBlock().getWorld())) {
+        if (!isManagedWorld(e.getBlock().getWorld())) {
             return;
         }
         Location l = e.getBlock().getLocation();
@@ -314,22 +314,36 @@ public class BlockListener extends FlagListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onBlockBreak(final BlockBreakEvent e) {
-        if (!addon.inWorld(e.getBlock().getWorld())) {
+        World blockWorld = e.getBlock().getWorld();
+        if (!isManagedWorld(blockWorld)) {
             return;
         }
         Location l = e.getBlock().getLocation();
         if (isOneChunkEnabled()) {
-            // OneChunk: el bloque roto se queda roto (se mina a través del chunk); solo se mide el avance.
+            // OneChunk: mined blocks stay broken; scan measures column depletion across Overworld, Nether, and End.
             addon.getIslands().getIslandAt(l).filter(i -> isProgressBlock(i, l)).ifPresent(i -> {
                 OneBlockIslands is = getIsland(i);
                 is.incrementBlockNumber();
-                oneChunk.onBlockBroken(i, is);
-                if (is.getBrokenInChunk() % OneChunkManager.SCAN_EVERY == 0) {
-                    handler.saveObjectAsync(is);
+                if (blockWorld.getEnvironment() == World.Environment.NORMAL) {
+                    oneChunk.onBlockBroken(i, is);
+                    if (is.getBrokenInChunk() % OneChunkManager.SCAN_EVERY == 0) {
+                        handler.saveObjectAsync(is);
+                    }
+                } else {
+                    oneChunk.onDimensionBlockBroken(i, is, blockWorld);
+                    int dimBroken = blockWorld.getEnvironment() == World.Environment.THE_END
+                            ? is.getEndBrokenInChunk()
+                            : is.getNetherBrokenInChunk();
+                    if (dimBroken % OneChunkManager.SCAN_EVERY == 0) {
+                        handler.saveObjectAsync(is);
+                    }
                 }
                 Bukkit.getPluginManager().callEvent(new MagicBlockEvent(i, e.getPlayer().getUniqueId(),
                         e.getPlayer().getInventory().getItemInMainHand(), e.getBlock(), null));
             });
+            return;
+        }
+        if (!addon.inWorld(blockWorld)) {
             return;
         }
         addon.getIslands().getIslandAt(l).filter(i -> isProgressBlock(i, l))
@@ -467,11 +481,18 @@ public class BlockListener extends FlagListener implements Listener {
         if (!isOneChunkEnabled()) {
             return location.equals(center);
         }
-        return location.getWorld() == center.getWorld()
+        World locWorld = location.getWorld();
+        return locWorld != null
+                && (locWorld == center.getWorld() || isManagedWorld(locWorld))
                 && (location.getBlockX() >> 4) == (center.getBlockX() >> 4)
                 && (location.getBlockZ() >> 4) == (center.getBlockZ() >> 4)
-                && location.getBlockY() >= center.getWorld().getMinHeight()
-                && location.getBlockY() < center.getWorld().getMaxHeight();
+                && location.getBlockY() >= locWorld.getMinHeight()
+                && location.getBlockY() < locWorld.getMaxHeight();
+    }
+
+    private boolean isManagedWorld(World world) {
+        return world != null
+                && (addon.inWorld(world) || world.equals(addon.getNetherWorld()) || world.equals(addon.getEndWorld()));
     }
 
     private boolean isOneChunkEnabled() {
@@ -1192,15 +1213,15 @@ public class BlockListener extends FlagListener implements Listener {
      */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBlockPlaceInMiningChunk(final org.bukkit.event.block.BlockPlaceEvent e) {
-        if (!isOneChunkEnabled() || !addon.inWorld(e.getBlock().getWorld())) {
+        if (!isOneChunkEnabled() || !isManagedWorld(e.getBlock().getWorld())) {
             return;
         }
         Location l = e.getBlock().getLocation();
         addon.getIslands().getIslandAt(l).filter(i -> isProgressBlock(i, l)).ifPresent(i -> {
             Block b = e.getBlock();
             if (b.getState() instanceof org.bukkit.block.Container || b.getType().name().endsWith("_BED")) {
-                e.getPlayer().sendMessage("§6OneChunk §7» §e⚠ ¡Atención! Estás dentro de la columna de minería (16x16). "
-                        + "§bConstruye tus cofres, camas y máquinas alrededor del chunk en tu isla para que no se reinicien al regenerar el terreno.");
+                e.getPlayer().sendMessage("§6OneChunk §7» §e⚠ Warning: You placed storage inside the 16x16 mining column. "
+                        + "§bBuild chests, beds, and machines outside the center chunk on your island so column resets keep them intact.");
             }
         });
     }

@@ -2,11 +2,13 @@ package world.bentobox.onechunk.mining;
 
 import java.util.Random;
 
+import org.bukkit.Axis;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.World;
-import org.bukkit.World;
+import org.bukkit.block.data.BlockData;
+import org.bukkit.block.data.Orientable;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Item;
@@ -193,6 +195,240 @@ public class OneChunkManager {
     public static boolean inFootprint(Location center, Location l) {
         return l.getWorld() != null && l.getWorld().equals(center.getWorld())
                 && (l.getBlockX() >> 4) == (center.getBlockX() >> 4) && (l.getBlockZ() >> 4) == (center.getBlockZ() >> 4);
+    }
+
+    /** Surface Y for a dimension column (64 in Nether/End, island center Y in Overworld). */
+    public static int surfaceYForWorld(World world, Location islandCenter) {
+        if (world == null || world.getEnvironment() == World.Environment.NORMAL) {
+            return islandCenter != null ? islandCenter.getBlockY() : OneChunkGenerator.DIMENSION_SURFACE_Y;
+        }
+        return OneChunkGenerator.safeSurfaceY(world, OneChunkGenerator.DIMENSION_SURFACE_Y);
+    }
+
+    /** Generates or advances an island's 16x16 OneChunk column in Nether or The End. */
+    public OneChunkGenerator.Result generateDimension(Island island, OneBlockIslands is, World dimWorld) {
+        Location c = island.getCenter();
+        if (c == null || dimWorld == null || dimWorld.getEnvironment() == World.Environment.NORMAL) {
+            return null;
+        }
+        boolean isEnd = dimWorld.getEnvironment() == World.Environment.THE_END;
+        int surfaceY = surfaceYForWorld(dimWorld, c);
+        int depth = depth(dimWorld, surfaceY);
+        int index = isEnd ? is.getEndChunksCleared() : is.getNetherChunksCleared();
+        int per = addon.getSettings().getOneChunkChunksPerBiome();
+        OneChunkDimensionBiome biome = OneChunkDimensionBiome.forDimension(dimWorld.getEnvironment(), index, per);
+        long seed = (island.getUniqueId().hashCode() * 31L + index)
+                ^ (isEnd ? 0x5448455F454E44L : 0x4E4554484552L);
+
+        dimWorld.getChunkAt(c.getBlockX() >> 4, c.getBlockZ() >> 4).load(true);
+        OneChunkGenerator.Result r = OneChunkGenerator.generateDimension(
+                dimWorld, c.getBlockX(), c.getBlockZ(), surfaceY, depth, biome, index, seed);
+        if (isEnd) {
+            is.setEndSolidInChunk(r.solidBlocks());
+            is.setEndBrokenInChunk(0);
+        } else {
+            is.setNetherSolidInChunk(r.solidBlocks());
+            is.setNetherBrokenInChunk(0);
+        }
+        if (r.spawn() != null) {
+            island.setSpawnPoint(dimWorld.getEnvironment(), r.spawn());
+            IslandsManager.saveIsland(island);
+        }
+        int floor = OneChunkGenerator.floorY(surfaceY, depth);
+        int ox = (c.getBlockX() >> 4) << 4;
+        int oz = (c.getBlockZ() >> 4) << 4;
+        relocateDimensionEntities(dimWorld, ox, oz, floor, OneChunkGenerator.topY(surfaceY), r.spawn(), index);
+        spawnDimensionMobs(dimWorld, new Location(dimWorld, c.getBlockX(), surfaceY, c.getBlockZ()), biome, index,
+                new Random(seed ^ 0x5DEECE66DL));
+        return r;
+    }
+
+    /**
+     * Ensures an island's Nether or End column exists on disk before a player arrives.
+     * Existing player-mined columns with a bedrock floor are adopted without overwriting blocks.
+     */
+    public void ensureDimensionGenerated(Island island, OneBlockIslands is, World dimWorld) {
+        Location c = island.getCenter();
+        if (c == null || dimWorld == null || dimWorld.getEnvironment() == World.Environment.NORMAL) {
+            return;
+        }
+        dimWorld.getChunkAt(c.getBlockX() >> 4, c.getBlockZ() >> 4).load(true);
+        int surfaceY = surfaceYForWorld(dimWorld, c);
+        int depth = depth(dimWorld, surfaceY);
+        int floor = OneChunkGenerator.floorY(surfaceY, depth);
+        int ox = (c.getBlockX() >> 4) << 4;
+        int oz = (c.getBlockZ() >> 4) << 4;
+        int remaining = OneChunkGenerator.countSolid(dimWorld, ox, oz, floor, OneChunkGenerator.topY(surfaceY));
+        boolean isEnd = dimWorld.getEnvironment() == World.Environment.THE_END;
+        int recordedSolid = isEnd ? is.getEndSolidInChunk() : is.getNetherSolidInChunk();
+        if (remaining == 0) {
+            generateDimension(island, is, dimWorld);
+        } else if (recordedSolid <= 0) {
+            if (isEnd) {
+                is.setEndSolidInChunk(Math.max(1, remaining));
+            } else {
+                is.setNetherSolidInChunk(Math.max(1, remaining));
+            }
+        }
+        ensureReturnPad(island, dimWorld);
+    }
+
+    /**
+     * Places a compact obsidian return pad and exit portal immediately west of the 16x16 mining chunk
+     * (inside the island's protected range, outside the regenerating footprint so chunk resets keep it intact).
+     */
+    public void ensureReturnPad(Island island, World dimWorld) {
+        Location c = island.getCenter();
+        if (c == null || dimWorld == null || dimWorld.getEnvironment() == World.Environment.NORMAL) {
+            return;
+        }
+        int ox = (c.getBlockX() >> 4) << 4;
+        int oz = (c.getBlockZ() >> 4) << 4;
+        int surfaceY = surfaceYForWorld(dimWorld, c);
+        dimWorld.getChunkAt((ox - 4) >> 4, (oz + 6) >> 4).load(true);
+
+        Material portalType = dimWorld.getEnvironment() == World.Environment.NETHER
+                ? Material.NETHER_PORTAL
+                : Material.END_PORTAL;
+        for (int x = ox - 4; x <= ox - 1; x++) {
+            for (int z = oz + 6; z <= oz + 10; z++) {
+                for (int y = surfaceY; y <= surfaceY + 5; y++) {
+                    if (dimWorld.getBlockAt(x, y, z).getType() == portalType) {
+                        return;
+                    }
+                }
+            }
+        }
+        for (int x = ox - 4; x <= ox - 1; x++) {
+            for (int z = oz + 6; z <= oz + 10; z++) {
+                if (dimWorld.getBlockAt(x, surfaceY, z).getType().isAir()) {
+                    dimWorld.getBlockAt(x, surfaceY, z).setType(Material.OBSIDIAN, false);
+                }
+            }
+        }
+        if (dimWorld.getEnvironment() == World.Environment.NETHER) {
+            int px = ox - 3;
+            for (int z = oz + 6; z <= oz + 9; z++) {
+                for (int y = surfaceY + 1; y <= surfaceY + 5; y++) {
+                    boolean frame = z == oz + 6 || z == oz + 9 || y == surfaceY + 1 || y == surfaceY + 5;
+                    if (frame) {
+                        dimWorld.getBlockAt(px, y, z).setType(Material.OBSIDIAN, false);
+                    } else {
+                        BlockData bd = Material.NETHER_PORTAL.createBlockData();
+                        if (bd instanceof Orientable orientable) {
+                            orientable.setAxis(Axis.Z);
+                        }
+                        dimWorld.getBlockAt(px, y, z).setBlockData(bd, false);
+                    }
+                }
+            }
+        } else {
+            // Raised 1-block bedrock rim around a single END_PORTAL return block so players cannot step in accidentally.
+            for (int x = ox - 4; x <= ox - 2; x++) {
+                for (int z = oz + 7; z <= oz + 9; z++) {
+                    Material m = (x == ox - 3 && z == oz + 8) ? Material.END_PORTAL : Material.BEDROCK;
+                    dimWorld.getBlockAt(x, surfaceY + 1, z).setType(m, false);
+                }
+            }
+        }
+    }
+
+    /** Handles block breaks inside an island's Nether or End 16x16 mining column. */
+    public boolean onDimensionBlockBroken(Island island, OneBlockIslands is, World dimWorld) {
+        Location c = island.getCenter();
+        if (c == null || dimWorld == null || dimWorld.getEnvironment() == World.Environment.NORMAL) {
+            return false;
+        }
+        boolean isEnd = dimWorld.getEnvironment() == World.Environment.THE_END;
+        int broken = (isEnd ? is.getEndBrokenInChunk() : is.getNetherBrokenInChunk()) + 1;
+        if (isEnd) {
+            is.setEndBrokenInChunk(broken);
+        } else {
+            is.setNetherBrokenInChunk(broken);
+        }
+        if (broken % SCAN_EVERY != 0) {
+            return false;
+        }
+        int remaining = getRemainingDimensionSolid(island, dimWorld);
+        int solid = isEnd ? is.getEndSolidInChunk() : is.getNetherSolidInChunk();
+        if (solid <= 0) {
+            if (isEnd) {
+                is.setEndSolidInChunk(Math.max(1, remaining));
+            } else {
+                is.setNetherSolidInChunk(Math.max(1, remaining));
+            }
+            return false;
+        }
+        if (!isCleared(solid, remaining, addon.getSettings().getOneChunkClearFraction())) {
+            return false;
+        }
+        int per = addon.getSettings().getOneChunkChunksPerBiome();
+        int clearedBefore = isEnd ? is.getEndChunksCleared() : is.getNetherChunksCleared();
+        OneChunkDimensionBiome before = OneChunkDimensionBiome.forDimension(dimWorld.getEnvironment(), clearedBefore, per);
+        int clearedAfter = clearedBefore + 1;
+        if (isEnd) {
+            is.setEndChunksCleared(clearedAfter);
+        } else {
+            is.setNetherChunksCleared(clearedAfter);
+        }
+        OneChunkDimensionBiome after = OneChunkDimensionBiome.forDimension(dimWorld.getEnvironment(), clearedAfter, per);
+        generateDimension(island, is, dimWorld);
+        String msg = "§6OneChunk §7» §aDimension chunk " + clearedAfter + " cleared! "
+                + (before != after ? "§eNew biome: §f" + after.displayName() + "§e."
+                        : "§7Biome: §f" + after.displayName() + "§7.");
+        for (Player p : dimWorld.getPlayers()) {
+            if (island.onIsland(p.getLocation())) {
+                p.sendMessage(msg);
+                p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f);
+            }
+        }
+        return true;
+    }
+
+    public int getRemainingDimensionSolid(Island island, World dimWorld) {
+        Location c = island.getCenter();
+        if (c == null || dimWorld == null) {
+            return 0;
+        }
+        int surfaceY = surfaceYForWorld(dimWorld, c);
+        int depth = depth(dimWorld, surfaceY);
+        int floor = OneChunkGenerator.floorY(surfaceY, depth);
+        int ox = (c.getBlockX() >> 4) << 4;
+        int oz = (c.getBlockZ() >> 4) << 4;
+        return OneChunkGenerator.countSolid(dimWorld, ox, oz, floor, OneChunkGenerator.topY(surfaceY));
+    }
+
+    private static void relocateDimensionEntities(World world, int ox, int oz, int floor, int top, Location spawn,
+            int chunkIndex) {
+        for (Entity e : world.getNearbyEntities(BoundingBox.of(new Vector(ox, floor, oz), new Vector(ox + 16, top + 40, oz + 16)))) {
+            if (e instanceof Player p) {
+                p.teleport(spawn);
+                p.setFallDistance(0f);
+                p.setVelocity(new Vector(0, 0, 0));
+                if (chunkIndex > 0) {
+                    p.sendMessage("§6OneChunk §7» §eThe dimension chunk regenerated: moved you to safe ground.");
+                }
+            } else if (e instanceof Item || (e instanceof Tameable t && t.isTamed())) {
+                e.teleport(spawn);
+            } else if (e instanceof LivingEntity) {
+                e.remove();
+            }
+        }
+    }
+
+    private void spawnDimensionMobs(World world, Location c, OneChunkDimensionBiome biome, int index, Random rnd) {
+        if (index <= 0) {
+            return;
+        }
+        int ox = (c.getBlockX() >> 4) << 4;
+        int oz = (c.getBlockZ() >> 4) << 4;
+        int y = c.getBlockY() + 1;
+        EntityType[] pool = biome.hostiles();
+        int types = unlockedTypes(index, pool.length);
+        int n = hostileCount(index, addon.getSettings().getOneChunkMaxMobs());
+        for (int i = 0; i < n; i++) {
+            spawn(world, pool[rnd.nextInt(types)], ox, oz, y, c, rnd);
+        }
     }
 
     /** Nº de mobs hostiles de un chunk: 0 en el primero (animales), luego 2 + número de chunk, con tope. */

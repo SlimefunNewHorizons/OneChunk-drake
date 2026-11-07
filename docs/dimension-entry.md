@@ -1,24 +1,27 @@
-# Shared dimension entry
+# OneChunk Nether & End Dimensions (`DimensionEntryListener`)
 
-The built-in generator creates Nether and End terrain only in chunk `(0,0)`.
-Their world border is 16 blocks wide. An arrival copied from a distant island
-can therefore land outside the border even though its world is correct.
+OneChunk supports per-island 16x16 mining columns in Nether (`world.nether.islands: true`)
+and The End (`world.end.islands: true`), with a shared `(0,0)` origin column fallback.
 
-`world.onechunk.safe-dimension-entry: true` enables a listener at `HIGHEST`
-priority for both player teleports and portal events. Its default is `false`
-to preserve existing behavior. External generators are excluded.
+`world.onechunk.safe-dimension-entry: true` (enabled by default; set to `false` only as an
+emergency bypass) registers `DimensionEntryListener` at `HIGHEST` priority for teleports,
+portal events, and dimension respawns:
 
-Safe arrivals are preserved. Otherwise the listener checks the interior of the
-already loaded origin chunk at the generated platform height. It requires an
-occluding, non-magma floor, two air blocks and a destination inside the current
-border. It cancels the entry if no safe spot exists. It never loads a chunk,
-places blocks, regenerates terrain, widens a border or writes player data.
-
-A Nether portal event supplies a search origin, not the final destination.
-After finding a safe spot, the listener cancels that search and requests a
-normal asynchronous player teleport, allowing teleport protection listeners to
-run again. It does not generate an exit portal on the shared platform.
-Reference: [Paper portal event API](https://jd.papermc.io/paper/26.2/org/bukkit/event/player/PlayerPortalEvent.html).
+1. **Micro-border healing:** Any legacy persisted `16x16` world border (`size < 1000`) on
+   `onechunk_world_nether` or `onechunk_world_the_end` is automatically reset on startup and
+   before arrival checks so islands across the grid (e.g. `Z=800`) never die to `WORLD_BORDER`.
+2. **Per-island Nether/End columns & return portals:** When `nether.islands` / `end.islands`
+   is enabled, arriving at an island's Nether or End coordinates generates (or adopts) a full
+   16x16 mining column from `minHeight` (`BEDROCK` floor) up to `Y=64`, seeded with dimension
+   ores and rotating dimension biomes (`OneChunkDimensionBiome`), plus a compact obsidian
+   return portal pad immediately west of the regenerating 16x16 footprint (`ox-4..ox-1`).
+   Arrivals above the Nether roof (`Y >= 120`, e.g. `Y=310`) are clamped to safe ground (`Y=65`).
+3. **Overworld return routing:** Entering a portal in `onechunk_world_nether` or
+   `onechunk_world_the_end` routes directly back to the player's Overworld island spawn,
+   overriding `Multiverse-NetherPortals` `8x` coordinate scaling.
+4. **Origin `(0,0)` fallback & repair:** `ChunkGeneratorWorld` populates a full `BEDROCK` to
+   `Y=64` column at `(0,0)` and `ensureOriginPlatform` heals worlds whose `(0,0)` region was
+   previously saved empty when Multiverse loaded them without a generator.
 
 ## Validation
 

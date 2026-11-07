@@ -66,6 +66,20 @@ public class OneBlockIslands implements DataObject {
     @Expose
     private int solidInChunk;
 
+    @Expose
+    private int netherChunksCleared;
+    @Expose
+    private int netherBrokenInChunk;
+    @Expose
+    private int netherSolidInChunk;
+
+    @Expose
+    private int endChunksCleared;
+    @Expose
+    private int endBrokenInChunk;
+    @Expose
+    private int endSolidInChunk;
+
     private Queue<OneBlockObject> queue = new LinkedList<>();
 
     public int getChunksCleared() {
@@ -90,6 +104,54 @@ public class OneBlockIslands implements DataObject {
 
     public void setSolidInChunk(int solidInChunk) {
         this.solidInChunk = solidInChunk;
+    }
+
+    public int getNetherChunksCleared() {
+        return netherChunksCleared;
+    }
+
+    public void setNetherChunksCleared(int netherChunksCleared) {
+        this.netherChunksCleared = netherChunksCleared;
+    }
+
+    public int getNetherBrokenInChunk() {
+        return netherBrokenInChunk;
+    }
+
+    public void setNetherBrokenInChunk(int netherBrokenInChunk) {
+        this.netherBrokenInChunk = netherBrokenInChunk;
+    }
+
+    public int getNetherSolidInChunk() {
+        return netherSolidInChunk;
+    }
+
+    public void setNetherSolidInChunk(int netherSolidInChunk) {
+        this.netherSolidInChunk = netherSolidInChunk;
+    }
+
+    public int getEndChunksCleared() {
+        return endChunksCleared;
+    }
+
+    public void setEndChunksCleared(int endChunksCleared) {
+        this.endChunksCleared = endChunksCleared;
+    }
+
+    public int getEndBrokenInChunk() {
+        return endBrokenInChunk;
+    }
+
+    public void setEndBrokenInChunk(int endBrokenInChunk) {
+        this.endBrokenInChunk = endBrokenInChunk;
+    }
+
+    public int getEndSolidInChunk() {
+        return endSolidInChunk;
+    }
+
+    public void setEndSolidInChunk(int endSolidInChunk) {
+        this.endSolidInChunk = endSolidInChunk;
     }
 
     /**

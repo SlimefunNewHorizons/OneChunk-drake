@@ -54,9 +54,9 @@ world:
   # It acts like a prefix for nether and end (e.g. onechunk_world, onechunk_world_nether, onechunk_world_end)
   world-name: onechunk_world
   onechunk:
-    # Keep Nether/End arrivals in the shared origin chunk. Cancel if its floor is unavailable.
-    # Enable after testing with the built-in generator; false preserves previous behavior.
-    safe-dimension-entry: false
+    # Ensure Nether/End arrivals land on a generated safe column and return portals route to the island.
+    # Enabled by default; set to false only as an emergency bypass.
+    safe-dimension-entry: true
     # Progression applies to every block in the 16x16 chunk containing the island center.
     # Enabled by default: this addon IS OneChunk. Set to false only to get the classic single magic block.
     enabled: true
@@ -207,36 +207,25 @@ world:
   nether:
     # Generate Nether - if this is false, the nether world will not be made and access to
     # the nether will not occur. Other plugins may still enable portal usage.
-    # Note: Some default challenges will not be possible if there is no nether.
-    # Note that with a standard nether all players arrive at the same portal and entering a
-    # portal will return them to their islands.
     generate: true
-    # Islands in Nether. Change to false for standard vanilla nether.
-    # Note that there is currently no magic block in the Nether
-    # /!\ BentoBox currently does not support changing this value mid-game. If you do need to change it, do a full reset of your databases and worlds.
-    islands: false
+    # Islands in Nether. Enabled so each player mines their own 16x16 Nether OneChunk column.
+    islands: true
     # Make the nether roof, if false, there is nothing up there
     # Change to false if lag is a problem from the generation
     # Only applies to islands Nether
     roof: false
-    # Nether spawn protection radius - this is the distance around the nether spawn
-    # that will be protected from player interaction (breaking blocks, pouring lava etc.)
-    # Minimum is 0 (not recommended), maximum is 100. Default is 25.
-    # Only applies to vanilla nether
-    spawn-radius: 25
+    # Nether spawn protection radius - 0 in OneChunk so origin chunk blocks are not locked.
+    spawn-radius: 0
     # This option indicates if nether portals should be linked via dimensions.
     # Option will simulate vanilla portal mechanics that links portals together
     # or creates a new portal, if there is not a portal in that dimension.
     # This option requires `allow-nether=true` in server.properties.
     create-and-link-portals: false
   end:
-    # End Nether - if this is false, the end world will not be made and access to
-    # the end will not occur. Other plugins may still enable portal usage.
+    # Generate The End - enabled by default in OneChunk.
     generate: true
-    # Islands in The End. Change to false for standard vanilla end.
-    # Note that there is currently no magic block in the End
-    # /!\ BentoBox currently does not support changing this value mid-game. If you do need to change it, do a full reset of your databases and worlds.
-    islands: false
+    # Islands in The End. Enabled so each player mines their own 16x16 End OneChunk column.
+    islands: true
     # This option indicates if obsidian platform in the end should be generated
     # when player enters the end world.
     # This option requires `allow-end=true` in bukkit.yml.

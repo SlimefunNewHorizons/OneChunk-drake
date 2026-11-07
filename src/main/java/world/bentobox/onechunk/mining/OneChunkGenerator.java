@@ -24,10 +24,25 @@ public final class OneChunkGenerator {
     /** Altura reservada sobre la superficie para árboles y cactus. */
     public static final int TREE_ROOM = 14;
 
+    /** Safe surface Y for Nether and End columns (strictly below Nether roof 128). */
+    public static final int DIMENSION_SURFACE_Y = 64;
+
     /** Resultado de generar un chunk. */
     public record Result(int solidBlocks, Location spawn, int trees, int ironOres, int coalOres) {}
 
     private OneChunkGenerator() {
+    }
+
+    /** Clamps surface Y safely inside world bounds and below Nether roof. */
+    public static int safeSurfaceY(World world, int requestedY) {
+        if (world == null) {
+            return requestedY;
+        }
+        int min = world.getMinHeight() + 8;
+        int roof = world.getEnvironment() == World.Environment.NETHER
+                ? Math.min(100, world.getMaxHeight() - TREE_ROOM - 4)
+                : world.getMaxHeight() - TREE_ROOM - 4;
+        return Math.max(min, Math.min(roof, requestedY));
     }
 
     /** Mayor coordenada Y que ocupa el volumen de un chunk generado en {@code surfaceY}. */
@@ -249,6 +264,158 @@ public final class OneChunkGenerator {
         }
         for (int y = baseY; y <= topLog; y++) {
             world.getBlockAt(x, y, z).setType(biome.log(), false);
+        }
+    }
+
+    /**
+     * Generates a full 16x16 OneChunk mining column in Nether or The End with guaranteed dimension resources.
+     */
+    public static Result generateDimension(World world, int centerX, int centerZ, int requestedSurfaceY, int depth,
+            OneChunkDimensionBiome biome, int index, long seed) {
+        int surfaceY = safeSurfaceY(world, requestedSurfaceY);
+        int effectiveDepth = Math.min(Math.max(4, depth), surfaceY - world.getMinHeight());
+        int ox = (centerX >> 4) << 4;
+        int oz = (centerZ >> 4) << 4;
+        int floor = floorY(surfaceY, effectiveDepth);
+        Random rnd = new Random(seed);
+
+        Location spawn = new Location(world, centerX + 0.5, surfaceY + 1, centerZ + 0.5);
+
+        clear(world, ox, oz, floor, topY(surfaceY), spawn);
+        dimensionLayers(world, ox, oz, floor, surfaceY, biome);
+        int[] counts = dimensionOres(world, ox, oz, floor, surfaceY, biome, index, rnd);
+        int structures = dimensionDecorate(world, ox, oz, surfaceY, biome, centerX, centerZ, rnd);
+        int solid = countSolid(world, ox, oz, floor, topY(surfaceY));
+        return new Result(solid, spawn, structures, counts[0], counts[1]);
+    }
+
+    private static void dimensionLayers(World world, int ox, int oz, int floor, int surfaceY,
+            OneChunkDimensionBiome biome) {
+        int half = floor + (surfaceY - floor) / 2;
+        for (int x = ox; x < ox + 16; x++) {
+            for (int z = oz; z < oz + 16; z++) {
+                world.getBlockAt(x, floor, z).setType(Material.BEDROCK, false);
+                for (int y = floor + 1; y <= surfaceY; y++) {
+                    Material m;
+                    if (y == surfaceY) {
+                        m = biome.surface();
+                    } else if (y >= surfaceY - 3) {
+                        m = biome.filler();
+                    } else if (y <= half && biome.deep() != biome.stone()) {
+                        m = biome.deep();
+                    } else {
+                        m = biome.stone();
+                    }
+                    world.getBlockAt(x, y, z).setType(m, false);
+                }
+            }
+        }
+    }
+
+    private static int[] dimensionOres(World world, int ox, int oz, int floor, int surfaceY,
+            OneChunkDimensionBiome biome, int index, Random rnd) {
+        int[] placed = new int[2];
+        if (biome.environment() == World.Environment.NETHER) {
+            placed[0] = dimensionVein(world, ox, oz, floor, surfaceY, Material.NETHER_QUARTZ_ORE, 14 + index, rnd);
+            placed[1] = dimensionVein(world, ox, oz, floor, surfaceY, Material.NETHER_GOLD_ORE, 10 + index, rnd);
+            dimensionVein(world, ox, oz, floor, surfaceY, Material.GLOWSTONE, 6 + index / 2, rnd);
+            dimensionVein(world, ox, oz, floor, surfaceY, Material.SOUL_SAND, 8, rnd);
+            // Magma is always at least 2 blocks below surface so arrival floor is never harmful.
+            dimensionVein(world, ox, oz, floor, surfaceY, Material.MAGMA_BLOCK, 6, rnd);
+            if (index >= 2) {
+                dimensionVein(world, ox, oz, floor, Math.min(surfaceY - 4, floor + 20), Material.ANCIENT_DEBRIS,
+                        Math.min(4, 1 + index / 2), rnd);
+            }
+        } else {
+            placed[0] = dimensionVein(world, ox, oz, floor, surfaceY, Material.OBSIDIAN, 12 + index, rnd);
+            placed[1] = dimensionVein(world, ox, oz, floor, surfaceY, Material.PURPUR_BLOCK, 8 + index, rnd);
+            dimensionVein(world, ox, oz, floor, surfaceY, Material.END_STONE_BRICKS, 8, rnd);
+        }
+        return placed;
+    }
+
+    private static int dimensionVein(World world, int ox, int oz, int floor, int yCeiling, Material target, int count,
+            Random rnd) {
+        int yMin = floor + 1;
+        int yMax = Math.max(yMin, yCeiling - 2);
+        if (yCeiling <= floor + 1) {
+            return 0;
+        }
+        int placed = 0;
+        int guard = 0;
+        while (placed < count && guard++ < count * 40) {
+            int x = ox + rnd.nextInt(16);
+            int z = oz + rnd.nextInt(16);
+            int y = yMin + rnd.nextInt(Math.max(1, yMax - yMin + 1));
+            int size = 1 + rnd.nextInt(3);
+            for (int i = 0; i < size && placed < count; i++) {
+                Block b = world.getBlockAt(x, y, z);
+                Material m = b.getType();
+                if (m == Material.NETHERRACK || m == Material.BLACKSTONE || m == Material.BASALT
+                        || m == Material.END_STONE || m == Material.END_STONE_BRICKS || m == Material.SOUL_SOIL) {
+                    b.setType(target, false);
+                    placed++;
+                }
+                x = Math.min(ox + 15, Math.max(ox, x + rnd.nextInt(3) - 1));
+                z = Math.min(oz + 15, Math.max(oz, z + rnd.nextInt(3) - 1));
+                y = Math.min(yMax, Math.max(yMin, y + rnd.nextInt(3) - 1));
+            }
+        }
+        return placed;
+    }
+
+    private static int dimensionDecorate(World world, int ox, int oz, int surfaceY, OneChunkDimensionBiome biome,
+            int centerX, int centerZ, Random rnd) {
+        if (biome.structures() <= 0) {
+            return 0;
+        }
+        List<int[]> spots = new ArrayList<>();
+        for (int gx = 3; gx <= 12; gx += 3) {
+            for (int gz = 3; gz <= 12; gz += 3) {
+                int x = ox + gx;
+                int z = oz + gz;
+                if (Math.abs(x - centerX) > 3 || Math.abs(z - centerZ) > 3) {
+                    spots.add(new int[] { x, z });
+                }
+            }
+        }
+        Collections.shuffle(spots, rnd);
+        int placed = 0;
+        for (int i = 0; i < biome.structures() && i < spots.size(); i++) {
+            int[] p = spots.get(i);
+            if (biome.environment() == World.Environment.THE_END) {
+                // Chorus flower directly on END_STONE is physics-valid and grows naturally.
+                world.getBlockAt(p[0], surfaceY, p[1]).setType(Material.END_STONE, false);
+                world.getBlockAt(p[0], surfaceY + 1, p[1]).setType(Material.CHORUS_FLOWER, false);
+            } else {
+                int h = 4 + rnd.nextInt(3);
+                fungus(world, p[0], surfaceY + 1, p[1], h, biome.stem(), biome.canopy());
+            }
+            placed++;
+        }
+        return placed;
+    }
+
+    private static void fungus(World world, int x, int baseY, int z, int height, Material stem, Material cap) {
+        int topStem = baseY + height - 1;
+        for (int dx = -2; dx <= 2; dx++) {
+            for (int dz = -2; dz <= 2; dz++) {
+                for (int dy = -1; dy <= 1; dy++) {
+                    if (Math.abs(dx) + Math.abs(dz) + Math.abs(dy) > 3 || (dx == 0 && dz == 0 && dy <= 0)) {
+                        continue;
+                    }
+                    Block b = world.getBlockAt(x + dx, topStem + dy, z + dz);
+                    if (b.getType().isAir()) {
+                        b.setType(cap, false);
+                    }
+                }
+            }
+        }
+        for (int y = baseY; y <= topStem; y++) {
+            world.getBlockAt(x, y, z).setType(stem, false);
+        }
+        if (world.getBlockAt(x + 1, topStem - 1, z).getType() == cap) {
+            world.getBlockAt(x + 1, topStem - 1, z).setType(Material.SHROOMLIGHT, false);
         }
     }
 }

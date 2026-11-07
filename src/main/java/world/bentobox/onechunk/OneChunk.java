@@ -314,10 +314,15 @@ public class OneChunk extends GameModeAddon {
         // Set spawn rates
         if (w != null) {
             if (env != World.Environment.NORMAL) {
-                // Nether/End de OneChunk: un solo chunk 16x16
-                w.getWorldBorder().setCenter(8, 8);
-                w.getWorldBorder().setSize(16);
+                // Heal any persisted 16x16 micro-border so islands across the grid never die to WORLD_BORDER.
+                if (w.getWorldBorder() != null && w.getWorldBorder().getSize() > 0
+                        && w.getWorldBorder().getSize() < 1000.0) {
+                    w.getWorldBorder().reset();
+                }
                 w.setSpawnLocation(8, ChunkGeneratorWorld.PLATFORM_Y + 1, 8);
+                if (!settings.isUseOwnGenerator()) {
+                    ChunkGeneratorWorld.ensureOriginPlatform(w);
+                }
             }
             setSpawnRates(w);
         }

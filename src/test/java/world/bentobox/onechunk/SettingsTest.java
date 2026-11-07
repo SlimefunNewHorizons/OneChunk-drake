@@ -168,7 +168,7 @@ public class SettingsTest extends CommonTestSetup {
      */
     @Test
     void testIsNetherIslands() {
-        assertFalse(s.isNetherIslands());
+        assertTrue(s.isNetherIslands());
     }
 
     /**
@@ -184,7 +184,7 @@ public class SettingsTest extends CommonTestSetup {
      */
     @Test
     void testGetNetherSpawnRadius() {
-        assertEquals(32, s.getNetherSpawnRadius());
+        assertEquals(0, s.getNetherSpawnRadius());
     }
 
     /**
@@ -192,7 +192,7 @@ public class SettingsTest extends CommonTestSetup {
      */
     @Test
     void testIsEndGenerate() {
-        assertFalse(s.isEndGenerate());
+        assertTrue(s.isEndGenerate());
     }
 
     /**
@@ -200,7 +200,7 @@ public class SettingsTest extends CommonTestSetup {
      */
     @Test
     void testIsEndIslands() {
-        assertFalse(s.isEndIslands());
+        assertTrue(s.isEndIslands());
     }
 
     /**

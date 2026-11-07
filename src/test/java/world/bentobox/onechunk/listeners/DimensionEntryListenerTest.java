@@ -149,8 +149,8 @@ class DimensionEntryListenerTest {
     }
 
     @Test
-    void configurationSwitchDefaultsToPreviousBehavior() {
-        assertFalse(new Settings().isSafeDimensionEntry());
+    void configurationSwitchDefaultsToSafeEntryAndCanBeDisabled() {
+        assertTrue(new Settings().isSafeDimensionEntry());
         settings.setSafeDimensionEntry(false);
         PlayerTeleportEvent event = teleport(nether, 0, 310, 800);
         Location original = event.getTo();

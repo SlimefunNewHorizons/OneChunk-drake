@@ -85,6 +85,8 @@ public class OneChunk extends GameModeAddon {
     public final Flag ONECHUNK_START_SAFETY = new Flag.Builder("ONECHUNK_START_SAFETY", Material.BAMBOO_BLOCK)
             .mode(Mode.BASIC)
             .type(Type.WORLD_SETTING)
+            .addon(this)
+            .setGameMode(this)
             .listener(new StartSafetyListener(this))
             .defaultSetting(false)
             .build();
@@ -96,6 +98,8 @@ public class OneChunk extends GameModeAddon {
     public final Flag ONECHUNK_BOSSBAR = new Flag.Builder("ONECHUNK_BOSSBAR", Material.DRAGON_HEAD)
             .mode(Mode.BASIC)
             .type(Type.SETTING)
+            .addon(this)
+            .setGameMode(this)
             .listener(bossBar)
             .defaultSetting(true)
             .build();
@@ -105,15 +109,19 @@ public class OneChunk extends GameModeAddon {
     public final Flag ONECHUNK_ACTIONBAR = new Flag.Builder("ONECHUNK_ACTIONBAR", Material.IRON_BARS)
             .mode(Mode.BASIC)
             .type(Type.SETTING)
+            .addon(this)
+            .setGameMode(this)
             .listener(bossBar)
             .defaultSetting(true)
-            .build();    
+            .build();
     /**
      * Flag to set who can break the magic block.
      */
     public final Flag ONECHUNK_MAGIC_BLOCK = new Flag.Builder("ONECHUNK_MAGIC_BLOCK", Material.GRASS_BLOCK)
             .mode(Mode.BASIC)
             .type(Type.PROTECTION)
+            .addon(this)
+            .setGameMode(this)
             .defaultRank(RanksManager.COOP_RANK)
             .build();
 

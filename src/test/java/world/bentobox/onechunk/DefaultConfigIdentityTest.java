@@ -53,11 +53,13 @@ class DefaultConfigIdentityTest {
     @Test
     void oneChunkIsOnByDefault() {
         assertEquals(true, CONFIG.getBoolean("world.onechunk.enabled"));
+        assertEquals(0, CONFIG.getInt("world.onechunk.depth"));
         assertEquals(true, CONFIG.getBoolean("world.onechunk.safe-dimension-entry"));
         assertEquals(true, CONFIG.getBoolean("world.nether.generate"));
         assertEquals(true, CONFIG.getBoolean("world.nether.islands"));
         assertEquals(0, CONFIG.getInt("world.nether.spawn-radius"));
         assertEquals(true, CONFIG.getBoolean("world.end.generate"));
         assertEquals(true, CONFIG.getBoolean("world.end.islands"));
+        assertEquals(true, CONFIG.getBoolean("world.flags.PISTON_PUSH"));
     }
 }

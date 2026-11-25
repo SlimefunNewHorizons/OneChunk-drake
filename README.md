@@ -4,6 +4,8 @@
 > **Créditos y licencia.** Port y mantenimiento por [JackStar6677-1](https://github.com/JackStar6677-1) y [DrakesCraft Labs](https://github.com/SlimefunNewHorizons). Autores originales: [BentoBoxWorld](https://github.com/BentoBoxWorld) (upstream [BentoBoxWorld/AOneBlock](https://github.com/BentoBoxWorld/AOneBlock)), [tastybento](https://github.com/tastybento), [BONNe](https://github.com/BONNe), [HSGamer](https://github.com/HSGamer), [mt-gitlocalize](https://github.com/mt-gitlocalize), [Baterka](https://github.com/Baterka), [Teenkung123](https://github.com/Teenkung123), [Fredthedoggy](https://github.com/Fredthedoggy), [Poslovitch](https://github.com/Poslovitch), [KrazyxWolf](https://github.com/KrazyxWolf), [qwe664](https://github.com/qwe664), [johncsuti](https://github.com/johncsuti), [delacry](https://github.com/delacry). Licencia original: **Eclipse Public License 2.0**. Detalle en [docs/UPSTREAM_ATTRIBUTION.md](docs/UPSTREAM_ATTRIBUTION.md).
 <!-- credits:end -->
 
+> **Branches / Ramas.** `main`: Paper/Purpur 1.21.11 (Java 21). `port-26x`: Paper/Purpur 26.x (production: Purpur 26.2, Java 25). If another section of this README says otherwise, this note prevails. / Si otra seccion de este README dice otra cosa, prevalece esta nota.
+
 # AOneBlock
 A OneBlock Minecraft plugin, written by tastybento. 
 Credit for the original idea: IJAminecraft.
